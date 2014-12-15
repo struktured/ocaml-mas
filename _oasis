@@ -1,0 +1,28 @@
+OASISFormat: 0.4
+Name:        mas
+Version:     0.1
+License:     GPL
+LicenseFile: LICENSE.txt
+Authors:     Carmelo Piccione
+Synopsis:    Multiagent system for OCaml
+BuildTools:  ocamlbuild
+Plugins: META (0.4), DevFiles (0.4)
+
+Library mas
+  Path:               src
+  Pack:               true
+  Modules:            Mas_intf
+  BuildDepends:       ppx_import, gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf 
+  FindLibName:        mas
+
+
+AlphaFeatures : ocamlbuild_more_args
+
+Document "mas"
+  Type: ocamlbuild (0.4)
+  BuildTools: ocamldoc
+  Title: Multiagent System API 
+  XOCamlbuildPath: .
+  XOCamlbuildExtraArgs:
+    "-docflags '-colorize-code -html -short-functors -charset utf-8'"
+  XOCamlbuildLibraries: mas
