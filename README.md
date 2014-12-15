@@ -1,4 +1,4 @@
-ocaml-rl
+ocaml-mas
 ========
 
-Reinforcement learning framework for OCaml. 
+Multiagent system for OCaml. 
