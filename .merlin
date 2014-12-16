@@ -5,7 +5,8 @@ PKG ppx_deriving.iter
 PKG ppx_deriving.ord
 PKG ppx_deriving_protobuf
 PKG containers
-PGK gen
+PKG gen
+PKG prob-cache.containers
 S src
 B _build/src
 
