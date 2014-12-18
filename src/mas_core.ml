@@ -38,18 +38,37 @@ struct
     type 'a t = {agent: 'a Agent.t; action: 'a Action.t; epoch: int} [@@deriving show]
   end
 
-  module Environment = 
-  struct
-    type params = {trials:int} [@@deriving show]
-    type 'a state = {params:params; agents:'a Agent.t list; obs:'a Observation.t}
-    type 'a t = 'a state Gen.t   
-    (** TODO start action / " for initial state? 
-    let init params agents = {params;agents} 
 
-    let run params t = ()
+  (** The dealer environment has one agent serving as a dealer
+   * and all other agents are the brokers. The environment begins
+   * with the dealer issuing some initial state to all brokers.
+   * The dealer then sends an acto*)
+  module DealerEnvironment(Action:Action) = struct
+    module Action = Action
+    type params = {trials:int} [@@deriving show]
+    type 'a, 'b state = {init_params:params; dealer: 'a Agent.t brokers:'b Agent.t list; obs:'a Observation.t}
+    type 'a t = 'a state Gen.t  
+    let init params agents = 
+      let open Gen.Infix in     
+      Gen.init ~limit:params.trials (fun epoch -> 
+        {trials=params.trials;params;agents;epoch})
 
     let agents t = t.agents
 
     let reward a t = 0.0
   end
 end
+
+(* ^^Exchange model^^
+ * trader agent -> exchange agent: BUY | SELL 
+ * exchange agent -> trader agent: NEW | CANCEL | FILL 
+ * 
+ * Example sequence w/traders T1, T2, and exchange E
+ * T1 -> E : BUY 
+ * E -> T1 : NEW
+ *   NEW -> T1 : (Not actionable)
+ * E -> T2 : NEW
+ *   NEW -> T2 : (Not actionable)
+ * T1 -> (does nothing)
+ * T2 ->
+ * *)
