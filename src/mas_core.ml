@@ -5,6 +5,8 @@ module type Action = Mas_intf.Action
 module type S = Mas_intf.S
 
 
+module type State = sig type t [@@deriving show] end
+
 module Make(Action:Action) (*: S with module Action = Action  *) = 
 struct
 
@@ -12,7 +14,8 @@ struct
   module rec Agent : 
     sig 
       type 'a t = private {policy: 'a Policy.t} [@@deriving show] 
-      val policy : 'a t -> 'a Policy.t val init : 'a Policy.t -> 'a t 
+      val policy : 'a t -> 'a Policy.t 
+      val init : 'a Policy.t -> 'a t 
     end =
   struct
     type 'a t = {policy: 'a Policy.t} [@@deriving show]
@@ -23,52 +26,35 @@ struct
   end
 
   and 
-    (** A policy is how an agent decides to act in an environment. **)
-    Policy : sig type 'a t = 'a Agent.t -> 'a Observation.t -> 'a Action.t [@@deriving show] end =
+    (** A policy is how an agent decides to act in an environment. *)
+    Policy : sig type 'a t = 'a Observation.t -> 'a Action.t [@@deriving show] end =
   struct
-    (** A policy function - given an agent and observation for the agent, get back an action from the agent *)
-    type 'a t = 'a Agent.t -> 'a Observation.t -> 'a Action.t [@@deriving show]
+    (** A policy function - given an observation, get back an action *)
+    type 'a t = a Observation.t -> 'a Action.t * Reward.t [@@deriving show]
   end
 
   and 
-    (** A single observation observed by a particular agent *)
-    Observation : sig type 'a t = private {agent: 'a Agent.t; action: 'a Action.t; epoch: int} [@@deriving show] end = 
+    Observation : sig type 'a t end =  
   struct
-    (** An observation is modeled as an [action] and the [agent] that caused it at [epoch] **)
-    type 'a t = {agent: 'a Agent.t; action: 'a Action.t; epoch: int} [@@deriving show]
+    (** An observation is modeled as an [action] and the [agent] that caused it at [epoch] *)
+    type 'a t = {agent: 'a Agent.t; action: 'a Action.t; reward:Reward.t; epoch: int} [@@deriving show]
   end
 
 
-  (** The dealer environment has one agent serving as a dealer
-   * and all other agents are the brokers. The environment begins
-   * with the dealer issuing some initial state to all brokers.
-   * The dealer then sends an acto*)
-  module DealerEnvironment(Action:Action) = struct
+  (** A simple two agent environment *)
+  module Environment(Action:Action) = struct
     module Action = Action
     type params = {trials:int} [@@deriving show]
-    type 'a, 'b state = {init_params:params; dealer: 'a Agent.t brokers:'b Agent.t list; obs:'a Observation.t}
+    type 'a state = {params:params; opp: 'a Agent.t; agent:'a Agent.t; obs:'a Observation.t}
     type 'a t = 'a state Gen.t  
-    let init params agents = 
+    let init ~(params:params) ~(opp:'a Agent.t) ~(agent:'a Agent.t) = 
       let open Gen.Infix in     
-      Gen.init ~limit:params.trials (fun epoch -> 
-        {trials=params.trials;params;agents;epoch})
-
-    let agents t = t.agents
-
-    let reward a t = 0.0
+      Gen.init ~limit:params.trials (fun epoch ->
+        if epoch = 0 then {trials=params.trials;params;agent;opp;obs={agent=opp;action=`Init;epoch=0;reward=0.}} else
+        let acting_agent = match (epoch % 2) with | 0 -> opp | 1 -> agent in
+        let policy = acting_agent policy in
+        let action, reward = policy obs in
+        let obs = {agent=acting_agent;epoch;action;reward} in
+        {params; agent; opp; obs})
   end
 end
-
-(* ^^Exchange model^^
- * trader agent -> exchange agent: BUY | SELL 
- * exchange agent -> trader agent: NEW | CANCEL | FILL 
- * 
- * Example sequence w/traders T1, T2, and exchange E
- * T1 -> E : BUY 
- * E -> T1 : NEW
- *   NEW -> T1 : (Not actionable)
- * E -> T2 : NEW
- *   NEW -> T2 : (Not actionable)
- * T1 -> (does nothing)
- * T2 ->
- * *)
