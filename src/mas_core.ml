@@ -6,18 +6,19 @@ module Action_with_init = struct type 'a t = [> `Init] as 'a end
   (** Defines an agent and operations to the run the agent within the environment *)
   module rec Agent : 
     sig
-      type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward : ('a,'b) Reward_fn.t} 
-        constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
+      type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward : ('a,'b) Reward_fn.t;name:string} 
+         constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
       val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
       val reward : ('a, 'b) t -> ('a, 'b) Reward_fn.t
-      val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> ('a, 'b) t 
+      val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> string -> ('a, 'b) t 
     end =
   struct
-    type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward: ('a, 'b) Reward_fn.t} 
-     constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
-    let init (policy:('a, 'b) Policy.t) (reward:('a, 'b) Reward_fn.t) = {reward;policy}
+    type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward: ('a, 'b) Reward_fn.t; name:string} 
+ constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
+    let init (policy:('a, 'b) Policy.t) (reward:('a, 'b) Reward_fn.t) name = {reward;policy;name}
     let policy (t:('a, 'b) t) = t.policy
     let reward (t:('a, 'b) t) = t.reward
+    let name t = t.name
  end
 
   and 
