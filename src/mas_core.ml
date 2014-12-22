@@ -45,27 +45,34 @@ module Action_with_init = struct type 'a t = [> `Init] as 'a end
 
 
   (** A simple two agent environment *)
-  module Environment = struct
-    type params = {trials:int} [@@deriving show]
-    type ('a,'b) obs = From_agent of ('a, 'b) Observation.t  | From_opp of ('b,'a) Observation.t
+  module Environment : sig 
+    type params = {trials:int} [@@deriving show] 
+    type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t
     type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs}
     type ('a,'b) t = ('a,'b) state Gen.t
-    let init ~(params:params) ~(opp:('b,'a) Agent.t) ~(agent:('a,'b) Agent.t) =
+    val init : params:params -> opp:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
+    end = 
+    struct
+    type params = {trials:int} [@@deriving show]
+    type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t
+    type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs}
+    type ('a,'b) t = ('a,'b) state Gen.t
+    let init ~(params:params) ~(opp:('b,'a) Agent.t) ~(agent:('a,'b) Agent.t) : ('a, 'b) t =
       let open Gen.Infix in 
       Gen.(0--(params.trials-1)) |> fun g -> Gen_ext.fold_map (fun epoch state -> let open Observation in
         match state.obs with
-      | From_opp obs ->
+      | From_opp (obs:('a, 'b) Observation.t) ->
           let policy = Agent.policy agent in
           let action = policy obs in
           let obs = {agent;epoch;action} in
           {params; agent; opp; obs = From_agent obs}
-      | From_agent obs ->
+      | From_agent (obs:('b, 'a) Observation.t) ->
           let policy = Agent.policy opp in
           let action = policy obs in
           let obs = {agent=opp;epoch;action} in
-          {params; agent; opp;obs = From_agent obs}
+          {params; agent; opp;obs = From_opp obs}
       ) 
-      {params;agent;opp;obs=From_agent {Observation.agent=opp;action=`Init;epoch=0}} g 
+      {params;agent;opp;obs=From_agent {Observation.agent=agent;action=`Init;epoch=0}} g 
 
      let agent t = t.agent
      let opp t = t.opp
