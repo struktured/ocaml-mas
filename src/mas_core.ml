@@ -1,13 +1,13 @@
 module Reward = Mas_intf.Reward
 
-module Action = struct type 'a t = [>] as 'a end
-module Action_with_init = struct type 'a t = [> `Init] as 'a end
+module Action = struct type 'a t = [>] as 'a [@@deriving show] end
+module Action_with_init = struct type 'a t = [> `Init] as 'a [@@deriving show] end
 
 (** Defines an agent and operations to the run the agent within the environment *)
 module rec Agent : 
 sig
   type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward : ('a,'b) Reward_fn.t;name:string} 
-    constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
+ constraint 'a = 'a Action.t constraint 'b = 'b Action.t  [@@deriving show]
   val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
   val reward : ('a, 'b) t -> ('a, 'b) Reward_fn.t
   val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> string -> ('a, 'b) t 
@@ -15,7 +15,7 @@ sig
 end =
 struct
   type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward: ('a, 'b) Reward_fn.t; name:string} 
-    constraint 'a = 'a Action.t constraint 'b = 'b Action.t 
+ constraint 'a = 'a Action.t constraint 'b = 'b Action.t [@@deriving show]
   let init (policy:('a, 'b) Policy.t) (reward:('a, 'b) Reward_fn.t) name = {reward;policy;name}
   let policy (t:('a, 'b) t) = t.policy
   let reward (t:('a, 'b) t) = t.reward
@@ -39,10 +39,10 @@ end
 
 and 
   Observation : sig type ('a,'b) t = {agent: ('b, 'a) Agent.t; action: 'b Action.t; epoch: int} 
-  constraint 'a = 'a Action.t constraint 'b = 'b Action.t end =  
+ constraint 'a = 'a Action.t constraint 'b = 'b Action.t [@@deriving show] end =  
 struct
   (** An observation is modeled as an [action] and the [agent] that caused it at [epoch] *)
-  type ('a, 'b) t = {agent: ('b, 'a) Agent.t; action: 'b Action.t; epoch: int} 
+  type ('a, 'b) t = {agent: ('b, 'a) Agent.t; action: 'b Action.t; epoch: int}  [@@deriving show]
 end
 
 
@@ -50,9 +50,9 @@ end
 module Environment : sig 
   open Observation
   type params = {trials:int} [@@deriving show] 
-  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t
-  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t
-  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs}
+  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t [@@deriving show]
+  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs} [@@deriving show]
   type ('a,'b) t = ('a,'b) state Gen.t
   val init : params:params -> opp:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
   val opp : ('a, 'b) state -> ('b , 'a) Agent.t
@@ -62,9 +62,9 @@ end =
 struct
   open Observation
   type params = {trials:int} [@@deriving show]
-  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t
-  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t
-  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs}
+  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t [@@deriving show]
+  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs} [@@deriving show]
   type ('a,'b) t = ('a,'b) state Gen.t
   let init ~(params:params) ~(opp:('b,'a) Agent.t) ~(agent:('a,'b) Agent.t) : ('a, 'b) t =
     let open Gen.Infix in 
