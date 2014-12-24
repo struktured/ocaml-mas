@@ -11,6 +11,7 @@ sig
   val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
   val reward : ('a, 'b) t -> ('a, 'b) Reward_fn.t
   val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> string -> ('a, 'b) t 
+  val name : ('a, 'b) t -> string
 end =
 struct
   type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward: ('a, 'b) Reward_fn.t; name:string} 
