@@ -1,7 +1,7 @@
 module Reward = Mas_intf.Reward
 
-module Action = struct type 'a t = [>] as 'a [@@deriving show] end
-module Action_with_init = struct type 'a t = [> `Init] as 'a [@@deriving show] end
+module Action = struct type 'a t = [>] as 'a [@@deriving show, ord] end
+module Action_with_init = struct type 'a t = [> `Init] as 'a [@@deriving show, ord] end
 
 (** Defines an agent and operations to the run the agent within the environment *)
 module rec Agent : 
@@ -67,7 +67,7 @@ module Environment_2_agents : sig
   type ('a, 'b) t = ('a, 'b) state Gen.t
 
   val init : params:params -> opponent:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
-  (** Initializes an environment generator given some intial parameters [params], an [opponent], and an [agent] *)
+  (** Initializes an environment generator given some initial parameters [params], an [opponent], and an [agent] *)
 
   val opponent : ('a, 'b) state -> ('b , 'a) Agent.t
   (** Gets the opponent given a state instance *)
@@ -79,7 +79,7 @@ module Environment_2_agents : sig
   (** Gets which agent's turn it is to act given a state instance *)
 
   val reward : ('a, 'b) state -> Reward.t
-  (** Gets the last observed reward in the system for the agent given a state instance *)
+  (** Gets the last observed reward in the system for the agent to act given a state instance *)
 end = 
 struct
   open Observation
