@@ -57,14 +57,14 @@ struct
 end
 
 
-(** A simple two agent environment *)
-module Environment : sig 
+(** A simple two agent, turn based environment with a primary agent and an opponent agent. *)
+module Environment_2_agents : sig 
   open Observation
   type params = {trials:int} [@@deriving show] 
   type ('a, 'b) turn = private Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
   type ('a, 'b) obs = private From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
   type ('a, 'b) state = private {params:params; opponent: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs;reward:Reward.t} [@@deriving show]
-  type ('a, 'b) t = ('a,'b) state Gen.t
+  type ('a, 'b) t = ('a, 'b) state Gen.t
 
   val init : params:params -> opponent:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
   (** Initializes an environment generator given some intial parameters [params], an [opponent], and an [agent] *)
