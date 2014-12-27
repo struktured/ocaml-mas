@@ -38,5 +38,4 @@ struct
 
   let init_with_policy ?arms ?(name="player") ~params policy  = 
     init ~params ?arms ~agent:(init_agent policy name) 
-
 end 
