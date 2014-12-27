@@ -61,45 +61,59 @@ end
 module Environment : sig 
   open Observation
   type params = {trials:int} [@@deriving show] 
-  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
-  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t [@@deriving show]
-  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs} [@@deriving show]
-  type ('a,'b) t = ('a,'b) state Gen.t
-  val init : params:params -> opp:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
-  val opp : ('a, 'b) state -> ('b , 'a) Agent.t
+  type ('a, 'b) turn = private Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+  type ('a, 'b) obs = private From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
+  type ('a, 'b) state = private {params:params; opponent: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs;reward:Reward.t} [@@deriving show]
+  type ('a, 'b) t = ('a,'b) state Gen.t
+
+  val init : params:params -> opponent:('b, [> `Init] as 'a) Agent.t -> agent:('a,'b) Agent.t -> ('a,'b) t 
+  (** Initializes an environment generator given some intial parameters [params], an [opponent], and an [agent] *)
+
+  val opponent : ('a, 'b) state -> ('b , 'a) Agent.t
+  (** Gets the opponent given a state instance *)
+
   val agent : ('a, 'b) state -> ('a, 'b) Agent.t
-  val turn : ('a,'b) state -> ('a,'b) turn
+  (** Gets the agent given a state instance *)
+
+  val turn : ('a, 'b) state -> ('a, 'b) turn 
+  (** Gets which agent's turn it is to act given a state instance *)
+
+  val reward : ('a, 'b) state -> Reward.t
+  (** Gets the last observed reward in the system for the agent given a state instance *)
 end = 
 struct
   open Observation
   type params = {trials:int} [@@deriving show]
-  type ('a,'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
-  type ('a,'b) obs = From_agent of ('b, 'a) Observation.t  | From_opp of ('a,'b) Observation.t [@@deriving show]
-  type ('a,'b) state = {params:params; opp: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs} [@@deriving show]
-  type ('a,'b) t = ('a,'b) state Gen.t
-  let init ~(params:params) ~(opp:('b,'a) Agent.t) ~(agent:('a,'b) Agent.t) : ('a, 'b) t =
+  type ('a, 'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+  type ('a, 'b) obs = From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
+  type ('a, 'b) state = {params:params; opponent: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs; reward : float} [@@deriving show]
+  type ('a, 'b) t = ('a, 'b) state Gen.t
+
+  let init ~(params:params) ~(opponent:('b,'a) Agent.t) ~(agent:('a,'b) Agent.t) : ('a, 'b) t =
     let open Gen.Infix in 
     Gen.(0--(params.trials-1)) |> fun g -> Gen_ext.fold_map (fun state epoch -> 
       match state.obs with
-      | From_opp (obs:('a, 'b) Observation.t) ->
+      | From_opponent (obs:('a, 'b) Observation.t) ->
         let policy = Agent.policy agent in
         let action = policy obs in
         let obs = {agent;epoch;action} in
-        {params; agent; opp; obs = From_agent obs}
+        let reward = (Agent.reward opponent) obs in
+        {params; agent; opponent; obs = From_agent obs;reward}
       | From_agent (obs:('b, 'a) Observation.t) ->
-        let policy = Agent.policy opp in
+        let policy = Agent.policy opponent in
         let action = policy obs in
-        let obs = {agent=opp;epoch;action} in
-        {params; agent; opp;obs = From_opp obs}
+        let obs = {agent=opponent;epoch;action} in
+        let reward = (Agent.reward agent) obs in
+        {params; agent; opponent;obs = From_opponent obs;reward}
     ) 
-      {params;agent;opp;obs=From_agent {agent;action=`Init;epoch=0}} g 
+    {params;agent;opponent;obs=From_agent {agent;action=`Init;epoch=0};reward=0.} g 
 
+ 
   let agent t = t.agent
-  let opp t = t.opp
-  let turn t = match t.obs with From_agent _ -> Opponent t.opp | From_opp _ -> Agent t.agent
-  let reward t = let obs, turn = 
-    match t.obs with From_agent obs -> obs, t.opp | From_opp obs -> obs, t.agent in
-    Agent.reward turn obs
+  let opponent t = t.opponent
+  let turn t = match t.obs with From_agent _ -> Opponent t.opponent | From_opponent _ -> Agent t.agent
+  let reward t = t.reward
+ 
 end
 
 
