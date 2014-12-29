@@ -2,7 +2,7 @@ module Reward = Mas_intf.Reward
 
 module type Action = sig type t [@@deriving show, ord] end
 
-(** Defines an agent and operations to the run the agent within the environment *)
+(** Defines an agent and operations to run the agent within the environment *)
 module rec Agent : 
 sig
   type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward : ('a,'b) Reward_fn.t;name:string} [@@deriving show]
