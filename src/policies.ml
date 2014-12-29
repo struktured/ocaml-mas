@@ -24,7 +24,7 @@ struct
          if (cur_exp >= best_exp) then cur else best) 
          expectations 
          (List.hd actions, Reward.min_value)
-     in a 
+      in a 
      else 
        let index = (Random.run rand_int) mod (List.length actions) in
        List.nth actions index

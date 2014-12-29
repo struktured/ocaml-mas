@@ -64,7 +64,7 @@ module Environment_2_agents : sig
   (** Creates an observation from the agent to the opponent *)
 
   val from_opponent_obs : ?epoch:int -> 'b -> ('b, 'a) Agent.t -> ('a, 'b) obs
-  (** Creates an observatoin from the opponent to the agent *)
+  (** Creates an observation from the opponent to the agent *)
 
   val init : params:('a, 'b) params -> agent:('a,'b) Agent.t -> opponent:('b, 'a) Agent.t -> ('a,'b) t 
   (** Initializes an environment generator given some initial parameters [params], an [agent], and an [opponent] *)
