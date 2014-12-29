@@ -30,7 +30,7 @@ struct
     let policy obs = match obs.action with 
       | `Arm a -> `Reward (arm_rewards.(a) ())
       | `Init -> `Reward 0.0
-      | a  -> failwith ("unknown action: " ^ (Action.show a a)) in
+      | a  -> failwith ("unknown action") in
     Agent.init policy (fun obs -> 0.0) ((string_of_int arms) ^ "-armed bandit")
  
   let init ?(arms=10) ~params ~agent = 
