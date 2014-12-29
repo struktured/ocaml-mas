@@ -31,7 +31,7 @@ and
   (** A reward function transforms observations into reward signals for a particular agent. While the reward function
     is assigned to the agent, its inner workings are still opaque to it beyond being a feedback mechanism.
    *)
-  Reward_fn : sig type ('a, 'b) t = ('a,' b) Observation.t -> Reward.t  [@@deriving show] end =
+  Reward_fn : sig type ('a, 'b) t = ('a, 'b) Observation.t -> Reward.t  [@@deriving show] end =
 struct
   (** The type of reward functions. Given an observation, determine a reward signal *)
   type ('a, 'b) t = ('a, 'b) Observation.t -> Reward.t [@@deriving show]
@@ -109,7 +109,7 @@ struct
         let obs = {agent=opponent;epoch=obs.epoch+1;action} in
         let reward = (Agent.reward agent) obs in
         {params; agent; opponent; obs = From_opponent obs;reward}
-    ) 
+    )
     {params;agent;opponent;obs=params.init_obs;reward=0.} g 
 
  
