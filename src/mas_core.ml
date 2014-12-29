@@ -118,10 +118,9 @@ struct
   let turn t = match t.obs with From_agent _ -> Opponent t.opponent | From_opponent _ -> Agent t.agent
   let from_agent_obs ?(epoch=0) action agent = From_agent {agent; action; epoch}
   let from_opponent_obs ?(epoch=0) action agent = From_opponent {agent; action; epoch}
-
   let params t = t.params
   let reward t = t.reward
- 
+
 end
 
 
