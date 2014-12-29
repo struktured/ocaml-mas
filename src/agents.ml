@@ -28,10 +28,10 @@ module State_based_reward_fn =
 module Make_state_based (State:STATE) (Action:Action) (Opp_action:Action) =
   struct
     let init 
-      ~(policy: (State.t, Action.t) State_based_policy.t) 
-      ~(state_trans: (State.t, Action.t, Opp_action.t) State_transform.t) 
-      ~(value_fn: (State.t, Action.t) State_based_value_fn.t) 
-      ~(reward_fn: State.t State_based_reward_fn.t)
+      (policy: (State.t, Action.t) State_based_policy.t) 
+      (state_trans: (State.t, Action.t, Opp_action.t) State_transform.t) 
+      (value_fn: (State.t, Action.t) State_based_value_fn.t) 
+      (reward_fn: State.t State_based_reward_fn.t)
       ~(name:string) =
       let policy' obs = 
         let state = state_trans obs in
