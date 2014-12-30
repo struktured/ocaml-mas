@@ -1,21 +1,39 @@
+
+(** The type for reward signals, equal to float *)
 module Reward = Mas_intf.Reward
 
+(** Defines the minimum requirements for an action, 
+ * which that it is showable and comparable *)
 module type Action = sig type t [@@deriving show, ord] end
 
 (** Defines an agent and operations to run the agent within the environment *)
 module rec Agent : 
 sig
-  type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward : ('a,'b) Reward_fn.t;name:string} [@@deriving show]
+  
+  (** An agent which takes emits actions of type 'a given observed
+    actions of type 'b from other agents 
+  *)
+  type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward_fn : ('a,'b) Reward_fn.t;name:string} [@@deriving show]
+ 
   val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
-  val reward : ('a, 'b) t -> ('a, 'b) Reward_fn.t
-  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> string -> ('a, 'b) t 
+  (** The policy this agent uses to make actions given observations *)
+
+  val reward_fn : ('a, 'b) t -> ('a, 'b) Reward_fn.t
+  (** The reward function associated with the given agent. 
+    Determines a reward signal given an observation *)
+
+  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> name:string -> ('a, 'b) t 
+  (** Initializes an agent given a policy, reward function, and [name] *)
+
   val name : ('a, 'b) t -> string
+  (** Gets the [name] of the agent *)
+
 end =
 struct
-  type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward: ('a, 'b) Reward_fn.t; name:string} [@@deriving show]
-  let init (policy:('a, 'b) Policy.t) (reward:('a, 'b) Reward_fn.t) name = {reward;policy;name}
+  type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward_fn: ('a, 'b) Reward_fn.t; name:string} [@@deriving show]
+  let init (policy:('a, 'b) Policy.t) (reward_fn:('a, 'b) Reward_fn.t) ~name = {reward_fn;policy;name}
   let policy (t:('a, 'b) t) = t.policy
-  let reward (t:('a, 'b) t) = t.reward
+  let reward_fn (t:('a, 'b) t) = t.reward_fn
   let name t = t.name
 end
 
@@ -101,13 +119,13 @@ struct
         let policy = Agent.policy agent in
         let action = policy obs in
         let obs = {agent;epoch=obs.epoch+1;action} in
-        let reward = (Agent.reward opponent) obs in
+        let reward = (Agent.reward_fn opponent) obs in
         {params; agent; opponent; obs = From_agent obs;reward}
       | From_agent (obs:('b, 'a) Observation.t) ->
         let policy = Agent.policy opponent in
         let action = policy obs in
         let obs = {agent=opponent;epoch=obs.epoch+1;action} in
-        let reward = (Agent.reward agent) obs in
+        let reward = (Agent.reward_fn agent) obs in
         {params; agent; opponent; obs = From_opponent obs;reward}
     )
     {params;agent;opponent;obs=params.init_obs;reward=0.} g 
