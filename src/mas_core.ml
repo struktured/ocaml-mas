@@ -11,7 +11,7 @@ module rec Agent :
 sig
   
   (** An agent which takes emits actions of type 'a given observed
-    actions of type 'b from other agents 
+      actions of type 'b from other agents 
   *)
   type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward_fn : ('a,'b) Reward_fn.t;name:string} [@@deriving show]
  
@@ -20,7 +20,7 @@ sig
 
   val reward_fn : ('a, 'b) t -> ('a, 'b) Reward_fn.t
   (** The reward function associated with the given agent. 
-    Determines a reward signal given an observation *)
+      Determines a reward signal given an observation *)
 
   val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> name:string -> ('a, 'b) t 
   (** Initializes an agent given a policy, reward function, and [name] *)
@@ -72,10 +72,20 @@ end
 (** A simple two agent, turn based environment with a primary agent and an opponent agent. *)
 module Environment_2_agents : sig 
   open Observation
+
+  (** Which agent's turn it is to act *)
   type ('a, 'b) turn = private Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+
+  (** Wraps an observation depending on if it's from the agent or the opponent *)
   type ('a, 'b) obs = private From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
+  
+  (** The initializing parameters of the environment *)
   type ('a, 'b) params = {trials:int; init_obs: ('a,'b) obs} [@@deriving show] 
+
+  (** The environment state, containing the parameters initializing the environment, the agent, opponent, and the last observation and reward *)
   type ('a, 'b) state = private {params:('a, 'b) params; opponent: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs;reward:Reward.t} [@@deriving show]
+  
+  (** A generator of successive environment states *)
   type ('a, 'b) t = ('a, 'b) state Gen.t
 
   val from_agent_obs : ?epoch:int -> 'a -> ('a, 'b) Agent.t -> ('a, 'b) obs

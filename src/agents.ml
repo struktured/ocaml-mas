@@ -7,17 +7,17 @@ end
 
 module State_transform =
   struct
-    type ('s, 'a, 'b) t = ('a, 'b) Observation.t -> 's
+    type ('s, 'a, 'b) t = ('a, 'b) Observation.t -> 's [@@deriving show]
   end
 
 module State_based_value_fn =
   struct
-    type ('s, 'a) t = ?action:'a -> 's -> Reward.t
+    type ('s, 'a) t = ?action:'a -> 's -> Reward.t [@deriving show]
   end
 
 module State_based_policy = 
  struct 
-  type ('s, 'a) t = 's -> 'a [@@deriving show] 
+  type ('s, 'a) t = 's -> 'a [@@deriving show]
  end
 
 module State_based_reward_fn = 
