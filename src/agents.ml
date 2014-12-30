@@ -1,4 +1,5 @@
 open Mas_core
+open Value_functions
 
 module type STATE = 
 sig
@@ -10,10 +11,6 @@ module State_transform =
     type ('s, 'a, 'b) t = ('a, 'b) Observation.t -> 's [@@deriving show]
   end
 
-module State_based_value_fn =
-  struct
-    type ('s, 'a) t = ?action:'a -> 's -> Reward.t [@deriving show]
-  end
 
 module State_based_policy = 
  struct 
