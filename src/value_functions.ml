@@ -10,6 +10,9 @@ end
 
 open Prob_cache_common
 
+(**
+  The value function signature
+ *)
 module type S = 
 sig
   module State : STATE 
