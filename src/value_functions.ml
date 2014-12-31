@@ -29,7 +29,9 @@ module type S =
 
   end
 
-module Make(State:STATE)(Action:Action) : S with module Action = Action and module State = State =
+(** Creates a discrete value function- it maps discrete state and actions with
+ * reward estimates by caching them explicitly *)
+module Make_discrete(State:STATE)(Action:Action) : S with module Action = Action and module State = State =
 struct
   module Action = Action
   module State = State
