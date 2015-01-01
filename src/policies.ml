@@ -23,7 +23,8 @@ module RandomPolicy =
         let open CCArray in
         let actions = action_provider s in
         let num_actions = CCArray.length actions in
-        let weights = CCOpt.get_lazy (fun () -> fun (_:'s) (_:'a array) -> actions >>| fun (_:'a) -> 1.0 /. CCFloat.of_int num_actions) weights in
+        let weights = CCOpt.get_lazy (fun () -> fun (_:'s) (_:'a array) -> actions >>|
+          fun (_:'a) -> 1.0 /. CCFloat.of_int num_actions) weights in
         let index = sample ~rand (weights s actions) in
         actions.(index)
   end
@@ -34,7 +35,8 @@ struct
 
   module Value_fn = Value_functions.Make_discrete(State)(Action)
 
-  let init ?(eps=default_eps) value_fn (action_provider : State.t -> Action.t array) : (State.t, Action.t) Agents.State_based_policy.t =
+  let init ?(eps=default_eps) value_fn (action_provider : State.t -> Action.t array) :
+    (State.t, Action.t) Agents.State_based_policy.t =
    let rand_float = Random.float 1.0 in
    fun (state:State.t) ->
      let actions = action_provider state in
