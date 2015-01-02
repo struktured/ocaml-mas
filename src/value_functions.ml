@@ -17,10 +17,7 @@ module type S =
 sig
   module State : STATE 
 
-  module Action:Action
-
-  module StateAction
-    : sig type t = State of State.t | Action of Action.t [@@deriving show, ord] end
+  module Action : Action
 
   type t
   val init : 
