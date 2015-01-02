@@ -10,9 +10,10 @@ let sample ?rand weights =
   let normalized = CCArray.map (fun w -> w /. sum) weights in
   let prob, index = CCArray.fold_while (fun (acc, i) w ->
     let acc = acc +. w in
-    if acc < thres then (acc, i+1), `Continue else (acc, i), `Stop) (0., 0) normalized
+    if (i+1) < Array.length normalized && acc < thres
+      then (acc, i+1), `Continue
+      else (acc, i), `Stop) (0., 0) normalized
   in index
-
 
 module RandomPolicy =
   struct
@@ -24,7 +25,7 @@ module RandomPolicy =
         let actions = action_provider s in
         let num_actions = CCArray.length actions in
         if num_actions = 0 then failwith("no actions possible for state") else
-        let weights = CCOpt.get_lazy (fun () -> fun (_:'s) (_:'a array) -> actions >>|
+        let weights = CCOpt.get_lazy (fun () -> fun (_:'s) (actions :'a array) -> actions >>|
           fun (_:'a) -> 1.0 /. CCFloat.of_int num_actions) weights in
         let index = sample ~rand (weights s actions) in
         actions.(index)
