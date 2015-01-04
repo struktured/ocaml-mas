@@ -80,7 +80,7 @@ and
   
       val value : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> Reward.t 
       val count : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> int
-      val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t -> Reward.t -> ('a, 'b) t
+      val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t -> Reward.t -> unit
       val init : 
         value:(?action:'a -> ('a, 'b) Observation.t -> Reward.t) -> 
         count:(?action:'a -> ('a, 'b) Observation.t -> int) ->
@@ -99,7 +99,7 @@ and
 
   let value t = t.value
   let count t = t.count
-  let update t ~action s r = t.update ~action s r; t
+  let update t ~action s r = t.update ~action s r
   end
 and 
   (** Observations are what other agents are given as input to react to (by applying their policies). 
@@ -175,15 +175,17 @@ struct
       | From_opponent (obs:('a, 'b) Observation.t) ->
         let policy = Agent.policy agent in
         let action = policy obs in
-        let obs = {agent;epoch=obs.epoch+1;action} in
-        let reward = (Agent.reward_fn opponent) obs in
-        {params; agent; opponent; obs = From_agent obs;reward}
+        let obs' = {agent;epoch=obs.epoch+1;action} in
+        let reward = (Agent.reward_fn agent) obs in
+        (Value_fn.update (Agent.value_fn agent)) ~action obs reward;
+        {params; agent; opponent; obs = From_agent obs';reward}
       | From_agent (obs:('b, 'a) Observation.t) ->
         let policy = Agent.policy opponent in
         let action = policy obs in
-        let obs = {agent=opponent;epoch=obs.epoch+1;action} in
-        let reward = (Agent.reward_fn agent) obs in
-        {params; agent; opponent; obs = From_opponent obs;reward}
+        let obs' = {agent=opponent;epoch=obs.epoch+1;action} in
+        let reward = (Agent.reward_fn opponent) obs in
+        (Value_fn.update (Agent.value_fn opponent)) ~action obs reward;
+        {params; agent; opponent; obs = From_opponent obs';reward}
     )
     {params;agent;opponent;obs=params.init_obs;reward=0.} g 
 
