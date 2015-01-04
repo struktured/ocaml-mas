@@ -1,4 +1,3 @@
-
 (** The type for reward signals, equal to float *)
 module Reward = Mas_intf.Reward
 
@@ -10,10 +9,14 @@ module type Action = sig type t [@@deriving show, ord] end
 module rec Agent : 
 sig
   
-  (** An agent which takes emits actions of type 'a given observed
-      actions of type 'b from other agents 
+  (** An agent which takes emits actions of type ['a] given observed
+      actions of type ['b] from other agents
   *)
-  type ('a, 'b) t = {policy: ('a, 'b) Policy.t;reward_fn : ('a,'b) Reward_fn.t;name:string} [@@deriving show]
+  type ('a, 'b) t = private {
+    policy: ('a, 'b) Policy.t;
+    reward_fn : ('a, 'b) Reward_fn.t;
+    value_fn : ('a, 'b) Value_fn.t;
+    name:string} [@@deriving show]
  
   val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
   (** The policy this agent uses to make actions given observations *)
@@ -22,18 +25,29 @@ sig
   (** The reward function associated with the given agent. 
       Determines a reward signal given an observation *)
 
-  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> name:string -> ('a, 'b) t 
-  (** Initializes an agent given a policy, reward function, and [name] *)
+  val value_fn : ('a, 'b) t -> ('a, 'b) Value_fn.t
+  (** The value function associated with the given agent. 
+      Determines an estimated reward signal given an observation *)
+
+  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> ('a, 'b) Value_fn.t -> name:string -> ('a, 'b) t 
+  (** Initializes an agent given a policy, reward function, value function, and [name] *)
 
   val name : ('a, 'b) t -> string
   (** Gets the [name] of the agent *)
 
 end =
 struct
-  type ('a, 'b) t = {policy: ('a, 'b) Policy.t; reward_fn: ('a, 'b) Reward_fn.t; name:string} [@@deriving show]
-  let init (policy:('a, 'b) Policy.t) (reward_fn:('a, 'b) Reward_fn.t) ~name = {reward_fn;policy;name}
+  type ('a, 'b) t = {
+    policy: ('a, 'b) Policy.t;
+    reward_fn : ('a, 'b) Reward_fn.t;
+    value_fn : ('a, 'b) Value_fn.t;
+    name:string} [@@deriving show]
+
+  let init (policy:('a, 'b) Policy.t) (reward_fn:('a, 'b) Reward_fn.t) value_fn ~name =
+    {policy;value_fn;reward_fn;name}
   let policy (t:('a, 'b) t) = t.policy
   let reward_fn (t:('a, 'b) t) = t.reward_fn
+  let value_fn t = t.value_fn
   let name t = t.name
 end
 
@@ -54,6 +68,39 @@ struct
   (** The type of reward functions. Given an observation, determine a reward signal *)
   type ('a, 'b) t = ('a, 'b) Observation.t -> Reward.t [@@deriving show]
 end
+
+and
+  Value_fn : 
+    sig 
+      type ('a, 'b) t = {
+        value : ?action:'a -> ('a, 'b) Observation.t -> Reward.t;
+        count : ?action:'a -> ('a, 'b) Observation.t -> int;
+        update : action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit
+      } [@@deriving show]
+  
+      val value : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> Reward.t 
+      val count : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> int
+      val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t -> Reward.t -> ('a, 'b) t
+      val init : 
+        value:(?action:'a -> ('a, 'b) Observation.t -> Reward.t) -> 
+        count:(?action:'a -> ('a, 'b) Observation.t -> int) ->
+        update:(action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit) ->
+        ('a, 'b) t
+    end =
+  struct
+  type ('a, 'b) t = {
+    value : ?action:'a -> ('a, 'b) Observation.t -> Reward.t;
+    count : ?action:'a -> ('a, 'b) Observation.t -> int;
+    update : action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit
+  } [@@deriving show]
+  
+  let init ~value ~count ~update =
+    {value;count;update}
+
+  let value t = t.value
+  let count t = t.count
+  let update t ~action s r = t.update ~action s r; t
+  end
 and 
   (** Observations are what other agents are given as input to react to (by applying their policies). 
     In this framework, observations are basically actions by other agents. Notably, this is where

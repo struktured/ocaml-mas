@@ -11,7 +11,7 @@ end
 open Prob_cache_common
 
 (**
-  The value function signature
+  The state based value function signature
  *)
 module type S = 
 sig
@@ -21,28 +21,49 @@ sig
 
   type t
   val init : 
-    ?prior_count:(?action:Action.t -> State.t -> int) -> 
-    ?prior_reward:(?action:Action.t -> State.t -> Reward.t) -> 
-    ?update_rule:Update_rules.Update_fn.t -> name:string -> t
-
+    count : (?action:Action.t -> State.t -> int) -> 
+    value : (?action:Action.t -> State.t -> Reward.t) -> 
+    update : (Action.t -> State.t -> Reward.t -> unit) ->
+    name : string -> t
 
   val value : t -> ?action:Action.t -> State.t -> Reward.t
   val count : t -> ?action:Action.t -> State.t -> int
-  val update : Action.t -> State.t -> Reward.t -> t -> t
+  val update : t -> Action.t -> State.t -> Reward.t -> unit
+  val name : t -> string
 
 end
 
-(** Creates a discrete value function- it maps discrete state and actions with
- * reward estimates by caching them explicitly *)
-module Make_discrete(State:STATE)(Action:Action) : S with module Action = Action and module State = State =
+
+module Make (State:STATE) (Action : Action) : 
+  S with module Action = Action and module State = State = 
 struct
+  module Action = Action
+  module State = State
+
+  type t = {
+    count : (?action:Action.t -> State.t -> int); 
+    value : (?action:Action.t -> State.t -> Reward.t);
+    update : (Action.t -> State.t -> Reward.t -> unit);
+    name : string} [@@deriving show]
+
+  let init ~count ~value ~update ~name = {count;value;update;name}
+  let value t = t.value
+  let count t = t.count
+  let update t = t.update
+  let name t = t.name
+end
+
+
+(** Creates a discrete state value function- it maps discrete state and actions with
+    reward estimates by caching them explicitly *)
+module Make_discrete (State:STATE) (Action:Action) =
+struct
+  module Value_function = Make(State)(Action)
   module Action = Action
   module State = State
   module StateAction = struct type t = State of State.t | Action of Action.t [@@deriving show, ord] end
   open StateAction
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
-
-  type t = {value_fn : (State.t, Action.t) State_based_value_fn.t; cache: Cache.t}
 
   let events_of ?action s = Cache.Events.of_list (
     match action with  
@@ -63,25 +84,26 @@ struct
     | Some s -> 
       let action = action_of events in f_s_a ?action s
 
-  let init ?prior_count ?prior_reward ?update_rule ~name : t = 
+  let update cache action s r =
+    let s_a = events_of ~action s in 
+    Cache.observe ~exp:r s_a cache
+
+  let count cache ?action s = 
+    let s_a = events_of ?action s in
+    Cache.count s_a cache
+  
+  let init ?prior_count ?prior_reward ?update_rule ~name = 
     let prior_count = CCOpt.map (fun pc -> (fun events -> 
       with_s_a events pc 0)) prior_count in
     let prior_exp = CCOpt.map (fun pr -> (fun events -> 
       with_s_a events pr 0.0)) prior_reward in
-    let cache = Cache.create ?prior_count ?prior_exp ?update_rule ~name in
-    let value_fn ?action s = 
-      let events = events_of ?action s in Cache.exp events cache
-    in {value_fn;cache}
-
-  let value t ?action s = t.value_fn ?action s
-
-  let update action s r t =
-    let s_a = events_of ~action s in 
-    let cache = Cache.observe ~exp:r s_a t.cache in
-    {t with cache}
-
-  let count t ?action s = 
-    let s_a = events_of ?action s in
-    Cache.count s_a t.cache
+    let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
+    let value ?action s =
+      let events = events_of ?action s in Cache.exp events !cache
+    in Value_function.init 
+      ~value
+      ~count:(fun ?action s -> count !cache ?action s) 
+      ~update:(fun action s r -> cache := update !cache action s r)
+      ~name
 end
 

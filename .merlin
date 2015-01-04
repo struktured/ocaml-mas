@@ -6,6 +6,7 @@ PKG ppx_deriving.ord
 PKG ppx_deriving_protobuf
 PKG containers
 PKG gen
+PKG sequence
 PKG prob_cache_containers
 S src
 B _build/src

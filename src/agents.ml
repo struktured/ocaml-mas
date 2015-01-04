@@ -1,5 +1,4 @@
 open Mas_core
-open Value_functions
 
 module type STATE = 
 sig
@@ -17,24 +16,29 @@ module State_based_policy =
   type ('s, 'a) t = 's -> 'a [@@deriving show]
  end
 
-module State_based_reward_fn = 
- struct 
-  type 's t = 's -> Reward.t [@@deriving show] 
- end
 
-module Make_state_based (State:STATE) (Action:Action) (Opp_action:Action) =
+module Make_state_based (Value_function : Value_functions.S) (Opp_action:Action)  =
   struct
+    module State = Value_function.State
+    module Action = Value_function.Action
+
     let init 
       (policy: (State.t, Action.t) State_based_policy.t) 
       (state_trans: (State.t, Action.t, Opp_action.t) State_transform.t) 
-      (value_fn: (State.t, Action.t) State_based_value_fn.t) 
-      (reward_fn: State.t State_based_reward_fn.t)
+      (value_fn: Value_function.t)
+      (reward_fn: State.t Reward_functions.State_based_reward_fn.t)
       ~(name:string) =
       let policy' obs = 
-        let state = state_trans obs in
-        policy state in
+        let s = state_trans obs in policy s in
       let reward_fn' obs = 
-        let state = state_trans obs in 
-        reward_fn state in
-      Agent.init policy' reward_fn' name
+        let s = state_trans obs in reward_fn s in
+      let value_fn' =
+       let value ?action obs = 
+         let s = state_trans obs in (Value_function.value value_fn) ?action s in 
+       let count ?action obs  = 
+         let s = state_trans obs in (Value_function.count value_fn) ?action s in
+       let update ~action obs r = 
+         let s = state_trans obs in (Value_function.update value_fn) action s r in
+      Value_fn.init ~count ~value ~update in
+      Agent.init policy' reward_fn' value_fn' name
   end

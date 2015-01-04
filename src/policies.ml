@@ -35,7 +35,7 @@ module GreedyPolicy(State : Agents.STATE) (Action : Action) =
 struct
   let default_eps = 0.90
 
-  module Value_fn = Value_functions.Make_discrete(State)(Action)
+  module Value_fn = Value_functions.Make(State)(Action)
 
   let init ?(eps=default_eps) value_fn (action_provider : State.t -> Action.t array) :
     (State.t, Action.t) Agents.State_based_policy.t =
