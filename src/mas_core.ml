@@ -1,12 +1,12 @@
 (** The type for reward signals, equal to float *)
 module Reward = Mas_intf.Reward
 
-(** Defines the minimum requirements for an action, 
+(** Defines the minimum requirements for an action,
  * which that it is showable and comparable *)
 module type Action = sig type t [@@deriving show, ord] end
 
 (** Defines an agent and operations to run the agent within the environment *)
-module rec Agent : 
+module rec Agent :
 sig
   
   (** An agent which takes emits actions of type ['a] given observed
@@ -18,18 +18,18 @@ sig
     value_fn : ('a, 'b) Value_fn.t;
     name:string} [@@deriving show]
  
-  val policy : ('a, 'b) t -> ('a, 'b) Policy.t 
+  val policy : ('a, 'b) t -> ('a, 'b) Policy.t
   (** The policy this agent uses to make actions given observations *)
 
   val reward_fn : ('a, 'b) t -> ('a, 'b) Reward_fn.t
-  (** The reward function associated with the given agent. 
+  (** The reward function associated with the given agent.
       Determines a reward signal given an observation *)
 
   val value_fn : ('a, 'b) t -> ('a, 'b) Value_fn.t
-  (** The value function associated with the given agent. 
+  (** The value function associated with the given agent.
       Determines an estimated reward signal given an observation *)
 
-  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> ('a, 'b) Value_fn.t -> name:string -> ('a, 'b) t 
+  val init : ('a, 'b) Policy.t -> ('a, 'b) Reward_fn.t -> ('a, 'b) Value_fn.t -> name:string -> ('a, 'b) t
   (** Initializes an agent given a policy, reward function, value function, and [name] *)
 
   val name : ('a, 'b) t -> string
@@ -51,7 +51,7 @@ struct
   let name t = t.name
 end
 
-and 
+and
   (** A policy is how an agent decides to act in an environment. *)
   Policy : sig type ('a, 'b) t = ('a, 'b) Observation.t -> 'a [@@deriving show] end =
 struct
@@ -70,22 +70,46 @@ struct
 end
 
 and
-  Value_fn : 
-    sig 
-      type ('a, 'b) t = {
+  (** The value function module. Defines an estimator of expected reward
+      given an observation and (optionally) an action. Value functions
+      are typically evolving, as environments will update the value function
+      with each newly observed reward signal by the agent *)
+  Value_fn :
+    sig
+      (** The type of a value function, composing of a [value], [count],
+          and [update] function. *)
+      type ('a, 'b) t = private {
         value : ?action:'a -> ('a, 'b) Observation.t -> Reward.t;
         count : ?action:'a -> ('a, 'b) Observation.t -> int;
         update : action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit
       } [@@deriving show]
   
-      val value : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> Reward.t 
+      val value : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t
+        -> Reward.t
+      (** Gets the value estimator for this value function instance.
+          The returned function estimates the reward signal given
+          the observation and an optional action. *)
+
       val count : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t -> int
-      val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t -> Reward.t -> unit
+      (** Gets the visitor count function for this value function instance.
+          The returned function counts the number of the times the
+          given observation and an optional [action] have been
+          visited or attempted by the agent *)
+
+
+      val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t
+        -> Reward.t -> unit
+      (** Updates a value function instance. Given an action,
+          new observation, and reward signal, update the underlying
+          model of the value function *)
+
       val init : 
         value:(?action:'a -> ('a, 'b) Observation.t -> Reward.t) -> 
         count:(?action:'a -> ('a, 'b) Observation.t -> int) ->
         update:(action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit) ->
         ('a, 'b) t
+      (** Initializes a new value function given a [value] estimator,
+          visitor [count] function, and an value [update[ function *)
     end =
   struct
   type ('a, 'b) t = {
