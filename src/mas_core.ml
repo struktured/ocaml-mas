@@ -109,7 +109,7 @@ and
         update:(action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit) ->
         ('a, 'b) t
       (** Initializes a new value function given a [value] estimator,
-          visitor [count] function, and an value [update[ function *)
+          visitor [count] function, and an value [update] function *)
     end =
   struct
   type ('a, 'b) t = {
