@@ -15,13 +15,13 @@ struct
   open Observation
   module Env = Environment_2_agents
   open Environment_2_agents
-  type arm = int [@@deriving show, ord]
-  type reward = float [@@deriving show, ord]
+  module Arm = struct type t = int [@@deriving show, ord] end
+  module Reward = struct type t = float [@@deriving show, ord] end
 
-  type opponent = (reward, arm) Agent.t [@@deriving show]
-  type agent = (arm, reward) Agent.t [@@deriving show]
-  type params = (arm, reward) Env.params
-  let agent_reward obs = match (obs.action:reward) with r -> r
+  type opponent = (Reward.t, Arm.t) Agent.t [@@deriving show]
+  type agent = (Arm.t, Reward.t) Agent.t [@@deriving show]
+  type params = (Arm.t, Reward.t) Env.params
+  let agent_reward obs = match (obs.action:Reward.t) with r -> r
 
   let init_agent policy name =
     Agent.init policy agent_reward name
@@ -30,11 +30,11 @@ struct
     let rand = CCRandom.float 1.0 in
     let open Gen.Infix in
     let arm_rewards = Gen.to_array (Gen.(0--(arms-1)) >>| fun (_:int) -> noisy (CCRandom.run rand)) in
-    let policy : (reward, arm) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
+    let policy : (Reward.t, Arm.t) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
     Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0) ~value:(fun ?action obs -> 0.0) ~update:(fun ~action obs r -> ())) 
       ~name:((string_of_int arms) ^ "-armed bandit")
 
-  let init ?(arms=10) ~trials ~(agent:agent) : (arm, reward) Env.t =
+  let init ?(arms=10) ~trials ~(agent:agent) : (Arm.t, Reward.t) Env.t =
     let opponent : opponent = init_opponent ~arms in
     let params : params = {trials;init_obs=Env.from_opponent_obs (0.0) opponent} in
     Env.init ~params ~agent ~opponent
