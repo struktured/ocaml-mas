@@ -194,7 +194,7 @@ struct
 
   let init ~(params:('a, 'b) params) ~(agent:('a, 'b) Agent.t) ~(opponent:('b, 'a) Agent.t) : ('a, 'b) t =
     let open Gen.Infix in 
-    Gen.(0--(params.trials-1)) |> fun g -> Gen_ext.fold_map (fun state epoch -> 
+    Gen.(0--(params.trials-1)) |> fun g -> Gen.scan (fun state epoch ->
       match state.obs with
       | From_opponent (obs:('a, 'b) Observation.t) ->
         let policy = Agent.policy agent in
