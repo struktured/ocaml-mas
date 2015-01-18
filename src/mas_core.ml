@@ -183,6 +183,9 @@ module Environment_2_agents : sig
   val params: ('a, 'b) state -> ('a, 'b) params
   (** Gets the initializing parameters of the environment generator *)
 
+  val epoch: ('a, 'b) state -> int
+  (** Gets the current epoch (trial) count *)
+
 end = 
 struct
   open Observation
@@ -221,6 +224,7 @@ struct
   let from_opponent_obs ?(epoch=0) action agent = From_opponent {agent; action; epoch}
   let params t = t.params
   let reward t = t.reward
+  let epoch t = match t.obs with From_agent obs -> obs.epoch | From_opponent obs -> obs.epoch
 
 end
 

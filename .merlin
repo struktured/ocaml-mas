@@ -8,6 +8,7 @@ PKG containers
 PKG gen
 PKG sequence
 PKG prob_cache_containers
+PKG archimedes
 S src
 B _build/src
 

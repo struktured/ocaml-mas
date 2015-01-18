@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: ef3e8e3db871275fabb7f0e92ea1f3e2)
+# DO NOT EDIT (digest: 9febd0a7c834219a64ae14cd58e89d46)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -24,6 +24,9 @@ true: annot, bin_annot
 "src/agents.cmx": for-pack(Mas)
 "src/reward_functions.cmx": for-pack(Mas)
 "src/value_functions.cmx": for-pack(Mas)
+"src/mas_plot.cmx": for-pack(Mas)
+"src/archimedes_plot.cmx": for-pack(Mas)
+<src/*.ml{,i,y}>: pkg_archimedes
 <src/*.ml{,i,y}>: pkg_containers
 <src/*.ml{,i,y}>: pkg_containers.misc
 <src/*.ml{,i,y}>: pkg_gen
