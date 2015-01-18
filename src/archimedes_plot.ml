@@ -13,7 +13,7 @@ let close t = A.close t.viewport
 let running_avg t g turn = 
   A.Viewport.title t.viewport "Average Reward Over Time";
   A.Viewport.xlabel t.viewport "Epoch";
-  A.Viewport.ylabel t.viewport "Reward";
+  A.Viewport.ylabel t.viewport "R";
   A.Axes.box ~grid:true t.viewport;
   let module Cache = CCHashtbl.Make(CCInt) in
   let cache = Cache.create 0 in
