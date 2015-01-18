@@ -9,7 +9,7 @@ module type Action = sig type t [@@deriving show, ord] end
 module rec Agent :
 sig
   
-  (** An agent which takes emits actions of type ['a] given observed
+  (** An agent which emits actions of type ['a] given observed
       actions of type ['b] from other agents
   *)
   type ('a, 'b) t = private {

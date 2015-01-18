@@ -1,9 +1,9 @@
 open Mas_core
 
-let noisy ?(min=0.) ?(max=1.) x = 
+let noisy ?(min=0.) ?(max=1.) x =
   let max_noise = if x >= -1. && x <= 1. then x *. x else sqrt (CCFloat.abs x) in
   let noise = CCRandom.float_range (-.max_noise) max_noise in
-  fun () -> 
+  fun () ->
     let n = CCRandom.run noise in
     let sum = x +. n in
     if sum <= max && sum >= min then sum
@@ -17,14 +17,27 @@ struct
   open Environment_2_agents
   module Arm = struct type t = int [@@deriving show, ord] end
   module Reward = struct type t = float [@@deriving show, ord] end
+  module State =
+    struct
+      let compare_unit () () = 0
+      type t = unit [@opaque] [@@deriving show, ord]
+    end
 
   type opponent = (Reward.t, Arm.t) Agent.t [@@deriving show]
   type agent = (Arm.t, Reward.t) Agent.t [@@deriving show]
   type params = (Arm.t, Reward.t) Env.params
   let agent_reward obs = match (obs.action:Reward.t) with r -> r
 
-  let init_agent policy name =
-    Agent.init policy agent_reward name
+  module State_based_value_function = Value_functions.Make_discrete(State)(Arm)
+
+  module BanditAgent = Agents.Make_state_based(State_based_value_function.Value_function)(Reward)
+
+  module GreedyPolicy = Policies.GreedyPolicy(State)(Arm)
+
+  let state_trans obs = ()
+
+  let init_agent policy value_fn name =
+    BanditAgent.init policy state_trans value_fn agent_reward name
 
   let init_opponent ~(arms:int) : opponent =
     let rand = CCRandom.float 1.0 in
@@ -36,7 +49,7 @@ struct
 
   let init ?(arms=10) ~trials ~(agent:agent) : (Arm.t, Reward.t) Env.t =
     let opponent : opponent = init_opponent ~arms in
-    let params : params = {trials;init_obs=Env.from_opponent_obs (0.0) opponent} in
+    let params : params = {trials;init_obs=Env.from_opponent_obs 0.0 opponent} in
     Env.init ~params ~agent ~opponent
 
   let init_with_policy ?arms ~trials ?(name="player") policy value_fn = 
