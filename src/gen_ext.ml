@@ -20,7 +20,9 @@ let ignore_fold_tuple f acc g =
   fold_tuple f acc g >>| fun (e, acc) -> e
 (** Ignores the accumulated value but retains the original generator *)
 
+let drop_first g = Gen.map (fun (a, b) -> b) g
+let drop_second g = Gen.map (fun (a, b) -> a) g
 
-let tuple_drop_first g = Gen.map (fun (a, b) -> b) g
-let tuple_drop_second g = Gen.map (fun (a, b) -> a) g
+let consume_first (f:'a * 'b -> unit) g = Gen.map (fun (a, b) -> f (a,b); b) g
+let consume_second (f:'a * 'b -> unit) g = Gen.map (fun (a, b) -> f (a,b); a) g
 
