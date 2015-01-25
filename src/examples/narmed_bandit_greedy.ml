@@ -19,7 +19,6 @@ let policy = GreedyPolicy.init
 let () =
   let env = NArmedBandit.init_with_policy
     ~arms ~trials policy value_function in
-  let init_state = CCOpt.get_exn (Gen.next env) in
   let plot = Archimedes_plot.init () in
   let player_turn = Env.Agent in 
   let env = Archimedes_plot.running_avg plot env player_turn in
