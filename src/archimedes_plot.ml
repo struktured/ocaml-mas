@@ -25,6 +25,3 @@ let running_avg t g turn =
        A.Path.line_to p x y;
        A.Viewport.stroke t.viewport `Data p;
        A.show t.viewport) 
-
-
-

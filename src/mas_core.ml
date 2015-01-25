@@ -144,8 +144,8 @@ end
 module Environment_2_agents : sig 
   open Observation
 
+  type turn = Agent | Opponent [@@deriving show]
   (** Which agent's turn it is to act *)
-  type ('a, 'b) turn = private Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
 
   (** Wraps an observation depending on if it's from the agent or the opponent *)
   type ('a, 'b) obs = private From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
@@ -174,7 +174,7 @@ module Environment_2_agents : sig
   val agent : ('a, 'b) state -> ('a, 'b) Agent.t
   (** Gets the agent given a state instance *)
 
-  val turn : ('a, 'b) state -> ('a, 'b) turn 
+  val turn : ('a, 'b) state -> turn
   (** Gets which agent's turn it is to act given a state instance *)
 
   val reward : ('a, 'b) state -> Reward.t
@@ -187,9 +187,9 @@ module Environment_2_agents : sig
   (** Gets the current epoch (trial) count *)
 
 end = 
-struct
+struct 
   open Observation
-  type ('a, 'b) turn = Opponent of ('b, 'a) Agent.t | Agent of ('a, 'b) Agent.t [@@deriving show]
+  type turn = Agent | Opponent [@@deriving show]
   type ('a, 'b) obs = From_agent of ('b, 'a) Observation.t  | From_opponent of ('a,'b) Observation.t [@@deriving show]
   type ('a, 'b) params = {trials:int; init_obs: ('a, 'b) obs} [@@deriving show] 
   type ('a, 'b) state = {params:('a, 'b) params; opponent: ('b,'a) Agent.t; agent:('a,'b) Agent.t; obs:('a,'b) obs; reward : float} [@@deriving show]
@@ -219,7 +219,7 @@ struct
  
   let agent t = t.agent
   let opponent t = t.opponent
-  let turn t = match t.obs with From_agent _ -> Opponent t.opponent | From_opponent _ -> Agent t.agent
+  let turn t = match t.obs with From_agent _ -> Opponent | From_opponent _ -> Agent 
   let from_agent_obs ?(epoch=0) action agent = From_agent {agent; action; epoch}
   let from_opponent_obs ?(epoch=0) action agent = From_opponent {agent; action; epoch}
   let params t = t.params
