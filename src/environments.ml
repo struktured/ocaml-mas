@@ -91,7 +91,7 @@ end
 
 
 let noisy ?(min=0.) ?(max=1.) x =
-  let max_noise = if x >= -1. && x <= 1. then x *. x else sqrt (CCFloat.abs x) in
+  let max_noise = if x >= -1. && x <= 1. then x *. x else sqrt((sqrt (CCFloat.abs x))) in
   let noise = CCRandom.float_range (-.max_noise) max_noise in
   fun () ->
     let n = CCRandom.run noise in
