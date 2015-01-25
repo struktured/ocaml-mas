@@ -1,5 +1,3 @@
-let reward_ub = 1.0
-let reward_lb = 0.0
 open Gen.Infix
 
 module A = Archimedes
