@@ -1,4 +1,6 @@
 open Mas_core
+open Environments
+
 let mean = Prob_cache_common.Update_rules.mean
 
 module type S =
