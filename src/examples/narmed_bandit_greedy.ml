@@ -7,8 +7,8 @@ module Env = Environment_2_agents
 module R = Mas_plot.Running_average
 
 let arms = 3
-let eps = 0.90
-let trials = 2000
+let eps = 0.95
+let trials = 300
 
 let action_provider _ = CCArray.(0--(arms-1))
 
