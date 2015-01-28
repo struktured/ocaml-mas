@@ -13,11 +13,24 @@ sig
   val close : t -> unit
 end
 
-module Running_average =
+module type Environment_decorator = 
+  sig
+    type t
+    val decorate : ('a, 'b) Environment_2_agents.t ->
+      (('a, 'b) Environment_2_agents.state * t) Gen.t
+  end
+
+module Running_average (*: Environment_decorator *) = 
 struct
-  type t = {
+type t = {
     who: Environment_2_agents.who option; agent_epoch:int; opponent_epoch:int;
     agent_avg: Reward.t; opponent_avg: Reward.t}
+
+  let who t = t.who
+  let agent_avg t = t.agent_avg
+  let opponent_avg t = t.opponent_avg
+  let agent_epoch t = t.agent_epoch
+  let opponent_epoch t = t.opponent_epoch
 
   let decorate (g:('a, 'b) Environment_2_agents.t) =
     let folder t state =
