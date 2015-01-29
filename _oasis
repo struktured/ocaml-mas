@@ -19,7 +19,7 @@ Library mas
 Library mas_examples
   Path:               src/examples
   Pack:               true
-  Modules:            Narmed_greedy_bandit
+  Modules:            Narmed_bandit
   BuildDepends:       mas
   FindLibName:        mas_examples
 

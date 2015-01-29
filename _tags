@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 33dd0009f0bb512cec0d3cbd1bba0dcc)
+# DO NOT EDIT (digest: e307fba11c7cea4d4964e8c204c95d72)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -38,7 +38,7 @@ true: annot, bin_annot
 <src/*.ml{,i,y}>: pkg_prob_cache_containers
 # Library mas_examples
 "src/examples/mas_examples.cmxs": use_mas_examples
-"src/examples/narmed_greedy_bandit.cmx": for-pack(Mas_examples)
+"src/examples/narmed_bandit.cmx": for-pack(Mas_examples)
 <src/examples/*.ml{,i,y}>: pkg_archimedes
 <src/examples/*.ml{,i,y}>: pkg_containers
 <src/examples/*.ml{,i,y}>: pkg_containers.misc

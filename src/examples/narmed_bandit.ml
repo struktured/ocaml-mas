@@ -8,9 +8,13 @@ module R = Mas_plot.Running_average
 
 let arm_weights = Array.of_list [0.1;0.5;1.0]
 let eps = 0.85
-let trials = 100
+let trials = 150
+let c = 2.0
 
-let go ?(eps=eps) ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) () =
+type policy = [`Random | `Greedy | `UCB]
+
+let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
+  ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) () =
   let arm_rewards = CCArray.map (fun x -> fun () -> x) arm_weights in
   let max_weight, max_index = 
     CCArray.foldi (fun (w, k) i w' -> 
@@ -18,8 +22,10 @@ let go ?(eps=eps) ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) 
   let num_arms = CCArray.length arm_rewards in
   let action_provider _ = CCArray.(0--(num_arms-1)) in
   let value_function = State_based_value_function.init "discrete" in
-  let policy = GreedyPolicy.init
-                 ~eps value_function action_provider in 
+  let policy = match policy with 
+    | `Random -> Policies.RandomPolicy.init ?weights action_provider 
+    | `Greedy -> GreedyPolicy.init ~eps value_function action_provider 
+    | `UCB -> UCBPolicy.init ~c value_function action_provider in
   let env = NArmedBandit.init_with_policy
               ~arm_rewards ~trials policy value_function in
   let plot = if show_plot then Some (Archimedes_plot.init ()) else None in
