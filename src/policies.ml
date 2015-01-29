@@ -80,7 +80,7 @@ struct
         let expectations = CCArray.map (fun action -> (action, Value_fn.value value_fn ~action state)) actions in
         let (a, exp) = CCArray.fold (fun ((best_action, best_exp) as best) ((cur_action, cur_exp) as cur) ->
           let n_a = Value_fn.count value_fn ~action:cur_action state in
-          let biased = if n_a = 0 then c else
+          let biased = if n_a = 0 then cur_exp +. c else
             cur_exp +. c *. sqrt (log (CCFloat.of_int n) /. (CCFloat.of_int n_a)) in
           if biased >= best_exp then cur else best)
           (CCArray.get actions 0, Reward.min_value)
