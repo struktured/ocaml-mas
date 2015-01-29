@@ -133,7 +133,7 @@ struct
   module BanditAgent = Agents.Make_state_based(State_based_value_function.Value_function)(Reward)
 
   module GreedyPolicy = Policies.GreedyPolicy(State)(Arm)
-  module UCBPolicy = Policies.UCBPolicy(State)(Arm)
+  module UCTPolicy = Policies.UCTPolicy(State)(Arm)
 
   let state_trans obs = ()
 

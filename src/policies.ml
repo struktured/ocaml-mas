@@ -66,7 +66,7 @@ struct
        Random.run gen
 end
 
-module UCBPolicy(State: Agents.STATE) (Action : Action) =
+module UCTPolicy(State: Agents.STATE) (Action : Action) =
 struct
 
   module Value_fn = Value_functions.Make(State)(Action)
@@ -81,7 +81,7 @@ struct
         let (a, exp) = CCArray.fold (fun ((best_action, best_exp) as best) ((cur_action, cur_exp) as cur) ->
           let n_a = Value_fn.count value_fn ~action:cur_action state in
           let biased = if n_a = 0 then c else
-            cur_exp +. sqrt (c *. log (CCFloat.of_int n) /. (CCFloat.of_int n_a)) in
+            cur_exp +. c *. sqrt (log (CCFloat.of_int n) /. (CCFloat.of_int n_a)) in
           if biased >= best_exp then cur else best)
           (CCArray.get actions 0, Reward.min_value)
           expectations in a

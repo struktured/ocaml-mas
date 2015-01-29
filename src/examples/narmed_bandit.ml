@@ -11,7 +11,7 @@ let eps = 0.85
 let trials = 150
 let c = 2.0
 
-type policy = [`Random | `Greedy | `UCB]
+type policy = [`Random | `Greedy | `UCT]
 
 let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
   ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) () =
@@ -25,7 +25,7 @@ let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
   let policy = match policy with 
     | `Random -> Policies.RandomPolicy.init ?weights action_provider 
     | `Greedy -> GreedyPolicy.init ~eps value_function action_provider 
-    | `UCB -> UCBPolicy.init ~c value_function action_provider in
+    | `UCT -> UCTPolicy.init ~c value_function action_provider in
   let env = NArmedBandit.init_with_policy
               ~arm_rewards ~trials policy value_function in
   let plot = if show_plot then Some (Archimedes_plot.init ()) else None in
