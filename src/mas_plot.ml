@@ -7,8 +7,9 @@ module type S =
 sig
   type t
   val running_avg : t ->
+    ?turn:Environment_2_agents.who ->
+    ?ub:(('a, 'b) Environment_2_agents.state -> float) ->
     ('a, 'b) Environment_2_agents.t ->
-    Environment_2_agents.who ->
     ('a, 'b) Environment_2_agents.t
   val close : t -> unit
 end

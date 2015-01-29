@@ -8,13 +8,18 @@ let sample ?rand weights =
   let thres = Random.run (CCOpt.get_lazy (fun () -> Random.float 1.0) rand) in
   let sum = CCArray.fold (+.) 0. weights in
   let normalized = CCArray.map (fun w -> w /. sum) weights in
-  let prob, index = CCArray.fold_while (fun (acc, i) w ->
+  let (_:float), index = CCArray.fold_while (fun (acc, i) w ->
     let acc = acc +. w in
     if (i+1) < Array.length normalized && acc < thres
       then (acc, i+1), `Continue
       else (acc, i), `Stop) (0., 0) normalized
   in index
 
+
+(**
+ * A policy that randomizes its behavior given a set of weights for each action.
+ * By default, backed by a uniform distribution.
+ *)
 module RandomPolicy =
   struct
     let init ?(weights:('s -> 'a array -> float array) option) (action_provider : 's -> 'a array) :
@@ -31,6 +36,12 @@ module RandomPolicy =
         actions.(index)
   end
 
+(**
+ * The simplest of reinforcement learning policies. The best
+ * action is chosen by the agent [epsilon] percent of the time,
+ * otherwise a random action is chosen (including the best action).
+ *
+ *)
 module GreedyPolicy(State : Agents.STATE) (Action : Action) =
 struct
   let default_eps = 0.90
@@ -55,3 +66,5 @@ struct
        let gen = CCArray.random_choose actions in
        Random.run gen
 end
+
+

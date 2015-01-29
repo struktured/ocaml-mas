@@ -139,19 +139,23 @@ struct
   let init_agent policy value_fn name =
     BanditAgent.init policy state_trans value_fn agent_reward name
 
-  let init_opponent ~(arms:int) : opponent =
+  let default_arms = 5
+
+  let init_opponent ?arm_rewards ?(num_arms=default_arms) () : opponent =
     let rand = CCRandom.float 1.0 in
     let open Gen.Infix in
-    let arm_rewards = Gen.to_array (Gen.(0--(arms-1)) >>| fun (_:int) -> noisy (CCRandom.run rand)) in
+    let arm_rewards = CCOpt.get_lazy (fun () -> Gen.to_array (Gen.(0--(num_arms-1)) >>| 
+      fun (_:int) -> noisy (CCRandom.run rand))) arm_rewards in
     let policy : (Reward.t, Arm.t) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
-    Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0) ~value:(fun ?action obs -> 0.0) ~update:(fun ~action obs r -> ())) 
-      ~name:((string_of_int arms) ^ "-armed bandit")
+    Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0) 
+      ~value:(fun ?action obs -> 0.0) ~update:(fun ~action obs r -> ())) 
+      ~name:((string_of_int (CCArray.length arm_rewards)) ^ "-armed bandit")
 
-  let init ?(arms=10) ~trials ~(agent:agent) : (Arm.t, Reward.t) Env.t =
-    let opponent : opponent = init_opponent ~arms in
+  let init ?arm_rewards ?num_arms ~trials ~(agent:agent) : (Arm.t, Reward.t) Env.t =
+    let opponent : opponent = init_opponent ?arm_rewards ?num_arms () in
     let params : params = {trials;init_obs=Env.from_opponent_obs 0.0 opponent} in
     Env.init ~params ~agent ~opponent
 
-  let init_with_policy ?arms ~trials ?(name="player") policy value_fn = 
-    init ?arms ~trials ~agent:(init_agent policy value_fn name)
+  let init_with_policy ?arm_rewards ?num_arms ~trials ?(name="player") policy value_fn = 
+    init ?arm_rewards ?num_arms ~trials ~agent:(init_agent policy value_fn name)
 end 
