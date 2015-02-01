@@ -30,7 +30,7 @@ sig
   val count : t -> ?action:Action.t -> State.t -> int
   val update : t -> Action.t -> State.t -> Reward.t -> unit
   val name : t -> string
-
+  val best_action : t -> State.t -> Action.t array -> (Action.t * Reward.t) option
 end
 
 
@@ -51,8 +51,17 @@ struct
   let count t = t.count
   let update t = t.update
   let name t = t.name
-end
 
+  let best_action t state actions =
+    let expectations = CCArray.map (fun action -> action, (value t) ~action state) actions in
+    let folder best_opt ((cur_action, cur_exp) as cur) =
+      match best_opt with
+      | None -> Some cur
+      | Some (best_act, best_exp) ->
+        if (cur_exp >= best_exp) then Some cur else best_opt 
+    in
+    CCArray.fold folder None expectations
+end
 
 (** Creates a discrete state value function- it maps discrete state and actions with
     reward estimates by caching them explicitly *)
@@ -110,3 +119,20 @@ struct
   let name = Value_function.name
   let value = Value_function.value
 end
+(*
+module Make_Q_Learner (State:STATE) (Action:Action) =
+  struct
+    module Value_fn = Make_discrete(State)(Action)
+    include Value_fn
+    let default_alpha = 0.9
+    let default_gamma = 0.1
+    let init ?prior_count ?prior_reward ?(alpha=default_alpha) ?(gamma=default_gamma) name =
+      let update_rule ?orig ~obs ~cnt cache =
+        orig 
+          
+      init ?prior_count ?prior_reward name 
+
+end
+*)
+
+

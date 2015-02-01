@@ -10,5 +10,6 @@ PKG sequence
 PKG prob_cache_containers
 PKG archimedes
 S src
+S src/examples
 B _build/src
 

@@ -53,14 +53,11 @@ struct
    fun (state:State.t) ->
      let actions = action_provider state in
      if actions = CCArray.empty then failwith("no actions possible for state: " ^ State.show state) else
-     let expectations = CCArray.map (fun action -> (action, Value_fn.value value_fn ~action state)) actions in
      let exploit = Random.run rand_float <= eps in
-     if exploit then
-      let (a, exp) = CCArray.fold (fun ((best_action, best_exp) as best) ((cur_action, cur_exp) as cur) ->
-         if (cur_exp >= best_exp) then cur else best)
-         (CCArray.get actions 0, Reward.min_value)
-         expectations
-      in a
+     if exploit then 
+       let opt = Value_fn.best_action value_fn state actions in
+       let (a,(_:float)) = CCOpt.get_exn opt in
+       a
      else
        let gen = CCArray.random_choose actions in
        Random.run gen
