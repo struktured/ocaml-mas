@@ -119,6 +119,7 @@ struct
   let name = Value_function.name
   let value = Value_function.value
 end
+
 (*
 module Make_Q_Learner (State:STATE) (Action:Action) =
   struct
@@ -133,6 +134,30 @@ module Make_Q_Learner (State:STATE) (Action:Action) =
       init ?prior_count ?prior_reward name 
 
 end
+*)
+
+(*
+  module Make_Q_learner(Value_function : Value_functions.S)
+  (Opp_action : Action) =
+    struct
+      module State = Value_function.State
+      module Action = Value_function.Action
+      module Agent = Make_state_based(Value_function)(Opp_action)
+      let default_gamma = 0.9
+      let default_alpha = 0.2
+      let init ?(alpha=default_alpha) ?(gamma=default_gamma)
+        policy state_trans value_fn reward_fn ~name =
+          let agent = Agent.init policy state_trans
+            value_fn reward_fn ~name in agent
+
+      let update2 a s r s' alpha gamma vf a' q_s'_a' =
+        let q_s_a = Value_function.value vf ~action:a s in
+        let q_s_a = q_s_a +. alpha *. (r +. gamma *. q_s'_a' -. q_s_a) in
+        q_s_a
+ 
+      let update a s r s' alpha gamma vf actions =
+        let a', q_s'_a' = CCOpt.get_exn (Value_function.best_action vf s' actions) in
+        update2 a s r s' alpha gamma vf a' q_s'_a'
 *)
 
 

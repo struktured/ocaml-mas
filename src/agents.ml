@@ -27,7 +27,7 @@ module State_based_policy =
 (** Creates a state based agent with state and action
     types defined by the [Value_function] and 
     [Opp_action] parameters *)
-module Make_state_based (Value_function : Value_functions.S) 
+module Make_state_based (Value_function : Value_functions.S)
   (Opp_action:Action) =
   struct
     module State = Value_function.State
@@ -54,25 +54,29 @@ module Make_state_based (Value_function : Value_functions.S)
       Agent.init policy' reward_fn' value_fn' name
   end
 
-  module Make_Q_learner(Value_function : Value_functions.S) 
+
+  module Make_Q_learner(Value_function : Value_functions.S)
   (Opp_action : Action) =
-    struct 
+    struct
       module State = Value_function.State
       module Action = Value_function.Action
       module Agent = Make_state_based(Value_function)(Opp_action)
       let default_gamma = 0.9
-      let default_alpha = 0.2 
-      let init ?(alpha=default_alpha) ?(gamma=default_gamma) 
+      let default_alpha = 0.2
+      let init ?(alpha=default_alpha) ?(gamma=default_gamma)
         policy state_trans value_fn reward_fn ~name =
-          let agent = Agent.init policy state_trans 
+          let agent = Agent.init policy state_trans
             value_fn reward_fn ~name in agent
-     (* 
-      let update  a s r s' alpha gamma vf =
-        let q_s_a = Value_function.value ~action:a s vf in
-        let a', q_s = Value_function.best_action value ~action:a' s' vf in
-        let q_s'_a' = Value_function.value ~action:a' s' vf in
-        let q_s_a = q_s_a +. alpha *. (r +. gamma *. q_s'_a' -. q_s_a) in
-        Value_function.set ~action:a s q_s_a vf *)
-    end
 
+      let update2 a s r s' alpha gamma vf a' q_s'_a' =
+        let q_s_a = Value_function.value vf ~action:a s in
+        let q_s_a = q_s_a +. alpha *. (r +. gamma *. q_s'_a' -. q_s_a) in
+        q_s_a
+ 
+      let update a s r s' alpha gamma vf actions =
+        let a', q_s'_a' = CCOpt.get_exn (Value_function.best_action vf s' actions) in
+        update2 a s r s' alpha gamma vf a' q_s'_a'
+
+(*        Value_function.set ~action:a s q_s_a vf  *)
+    end
 
