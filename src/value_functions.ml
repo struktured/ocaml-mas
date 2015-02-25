@@ -7,7 +7,6 @@ struct
   type ('s, 'a) t = ?action:'a -> 's -> Reward.t [@deriving show]
 end
 
-
 open Prob_cache_common
 
 (**
@@ -120,21 +119,26 @@ struct
   let value = Value_function.value
 end
 
-(*
+
 module Make_Q_Learner (State:STATE) (Action:Action) =
   struct
     module Value_fn = Make_discrete(State)(Action)
-    include Value_fn
+    module RingBuffer = CCRingBuffer.Make
+      (struct type t = State.t * Action.t * Reward.t end)
+
+    module Q_Learner = Learning_rules.Q_learner.Make(Value_fn.Value_function)
+
+    type update_rule = Value_fn.Cache.update_rule
+
     let default_alpha = 0.9
     let default_gamma = 0.1
     let init ?prior_count ?prior_reward ?(alpha=default_alpha) ?(gamma=default_gamma) name =
-      let update_rule ?orig ~obs ~cnt cache =
-        orig 
-          
-      init ?prior_count ?prior_reward name 
-
+      let ring_buffer = RingBuffer.create ~bounded:true 2 in
+            let update_rule ?orig ~obs ~cnt = 0.0 in
+      Value_fn.init
+      ?prior_count ?prior_reward ~update_rule name
 end
-*)
+
 
 (*
   module Make_Q_learner(Value_function : Value_functions.S)
