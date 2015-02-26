@@ -11,7 +11,7 @@ sig
   val init :
     count : (?action:Action.t -> State.t -> int) ->
     value : (?action:Action.t -> State.t -> Reward.t) ->
-    update : (Action.t -> State.t -> Reward.t -> unit) ->
+    update : (t -> Action.t -> State.t -> Reward.t -> unit) ->
     name : string -> t
 
   val value : t -> ?action:Action.t -> State.t -> Reward.t
@@ -30,13 +30,14 @@ struct
   type t = {
     count : (?action:Action.t -> State.t -> int);
     value : (?action:Action.t -> State.t -> Reward.t);
-    update : (Action.t -> State.t -> Reward.t -> unit);
-    name : string} [@@deriving show]
+    update : (t -> Action.t -> State.t -> Reward.t ->  unit);
+    name : string
+  } [@@deriving show]
 
   let init ~count ~value ~update ~name = {count;value;update;name}
   let value t = t.value
   let count t = t.count
-  let update t = t.update
+  let update t = t.update t
   let name t = t.name
 
   let best_action t state actions =

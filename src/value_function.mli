@@ -16,7 +16,7 @@ sig
   val init :
     count : (?action:Action.t -> State.t -> int) ->
     value : (?action:Action.t -> State.t -> Reward.t) ->
-    update : (Action.t -> State.t -> Reward.t -> unit) ->
+    update : (t -> Action.t -> State.t -> Reward.t -> unit) ->
     name : string -> t
 
   val value : t -> ?action:Action.t -> State.t -> Reward.t
