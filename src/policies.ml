@@ -45,7 +45,7 @@ module GreedyPolicy(State : Agents.STATE) (Action : Action) =
 struct
   let default_eps = 0.90
 
-  module Value_fn = Value_functions.Make(State)(Action)
+  module Value_fn = Value_function.Make(State)(Action)
 
   let init ?(eps=default_eps) value_fn (action_provider : State.t -> Action.t array) :
     (State.t, Action.t) Agents.State_based_policy.t =
@@ -55,8 +55,8 @@ struct
      if actions = CCArray.empty then failwith("no actions possible for state: " ^ State.show state) else
      let exploit = Random.run rand_float <= eps in
      if exploit then 
-       let opt = Value_fn.best_action value_fn state actions in
-       let (a,(_:float)) = CCOpt.get_exn opt in
+       let best_act = Value_fn.best_action value_fn state actions in
+       let (a,(_:float)) = best_act in
        a
      else
        let gen = CCArray.random_choose actions in
@@ -66,7 +66,7 @@ end
 module UCTPolicy(State: Agents.STATE) (Action : Action) =
 struct
 
-  module Value_fn = Value_functions.Make(State)(Action)
+  module Value_fn = Value_function.Make(State)(Action)
 
   let init ?(c=2.0) value_fn (action_provider : State.t -> Action.t array) :
     (State.t, Action.t) Agents.State_based_policy.t =

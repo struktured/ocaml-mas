@@ -27,7 +27,7 @@ module State_based_policy =
 (** Creates a state based agent with state and action
     types defined by the [Value_function] and 
     [Opp_action] parameters *)
-module Make_state_based (Value_function : Value_functions.S)
+module Make_state_based (Value_function : Value_function.S)
   (Opp_action:Action) =
   struct
     module State = Value_function.State
@@ -42,7 +42,6 @@ module Make_state_based (Value_function : Value_functions.S)
       let policy' obs =
         let s = state_trans obs in policy s in
       let reward_fn' obs = reward_fn obs in
-    (* let s = state_trans obs in reward_fn (* s *) obs in *)
       let value_fn' =
        let value ?action obs =
          let s = state_trans obs in (Value_function.value value_fn) ?action s in
@@ -55,7 +54,7 @@ module Make_state_based (Value_function : Value_functions.S)
   end
 
 
-  module Make_Q_learner(Value_function : Value_functions.S)
+  module Make_Q_learner(Value_function : Value_function.S)
   (Opp_action : Action) =
     struct
       module State = Value_function.State
@@ -74,7 +73,7 @@ module Make_state_based (Value_function : Value_functions.S)
         q_s_a
  
       let update a s r s' alpha gamma vf actions =
-        let a', q_s'_a' = CCOpt.get_exn (Value_function.best_action vf s' actions) in
+        let a', q_s'_a' = Value_function.best_action vf s' actions in
         update2 a s r s' alpha gamma vf a' q_s'_a'
 
 (*        Value_function.set ~action:a s q_s_a vf  *)

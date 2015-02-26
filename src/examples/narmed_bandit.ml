@@ -23,7 +23,7 @@ struct
   type params = (Arm.t, Reward.t) Env.params
   let agent_reward obs = match (obs.action:Reward.t) with r -> r
 
-  module State_based_value_function = Value_functions.Make_discrete(State)(Arm)
+  module State_based_value_function = Discrete_value_function.Make(State)(Arm)
 
   module BanditAgent = Agents.Make_state_based(State_based_value_function.Value_function)(Reward)
 
