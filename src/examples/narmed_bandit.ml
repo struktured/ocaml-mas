@@ -2,8 +2,11 @@ open Mas
 open Mas_core
 open Environments
 
+
 module NArmedBandit =
 struct
+  let last_plot = ref None
+
   open Observation
   module Env = Environment_2_agents
   open Environment_2_agents
@@ -20,7 +23,7 @@ struct
   type params = (Arm.t, Reward.t) Env.params
   let agent_reward obs = match (obs.action:Reward.t) with r -> r
 
-  module State_based_value_function = Value_functions.Make_discrete(State)(Arm)
+  module State_based_value_function = Discrete_value_function.Make(State)(Arm)
 
   module BanditAgent = Agents.Make_state_based(State_based_value_function.Value_function)(Reward)
 
@@ -80,6 +83,7 @@ let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
   let env = NArmedBandit.init_with_policy
               ~arm_rewards ~trials policy value_function in
   let plot = if show_plot then Some (Archimedes_plot.init ()) else None in
+  last_plot := plot;
   let player_turn = Env.Agent in 
   let env = CCOpt.maybe (fun p -> Archimedes_plot.running_avg p 
     ~turn:player_turn ~ub:(fun s -> max_weight) env) env plot in
@@ -94,6 +98,8 @@ let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
   let env = R.decorate env in
   Gen.iter print env;plot
 
-let close p =
+let close p : unit =
   CCOpt.maybe (fun p -> Archimedes_plot.close p) () p
+
+let close_last_plot () = close !last_plot; last_plot := None
 
