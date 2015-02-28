@@ -73,7 +73,7 @@ module Make_Q_Learner (State:STATE) (Action:Action) =
       let ring_buffer = RingBuffer.create ~bounded:true 2 in
       let update_rule (value_fn:Value_fn.t) (a:Action.t) (s:State.t) (r:Reward.t) =
         let s', a', r' = RingBuffer.peek_front ring_buffer in
-        let r'' = Q_Learner.update ~a ~s ~r ~s' ?alpha ?gamma ~value_fn ~actions:(action_fn s) in
+        let r'' = Q_Learner.update_best_action ~a ~s ~r ~s' ?alpha ?gamma ~value_fn ~actions:(action_fn s) in
         RingBuffer.push_back ring_buffer (s, a, r); r'' in
       update_rule
 end
