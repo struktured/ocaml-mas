@@ -41,13 +41,14 @@ module RandomPolicy =
   action is chosen by the agent [epsilon] percent of the time,
   otherwise a random action is chosen (including the best action).
  *)
-module GreedyPolicy(State : Agents.STATE) (Action : Action) =
+module GreedyPolicy(Value_function: Value_function.S) =
 struct
   let default_eps = 0.90
+  module State = Value_function.State
+  module Action = Value_function.Action
 
-  module Value_fn = Value_function.Make(State)(Action)
-
-  let init ?(eps=default_eps) value_fn (action_provider : State.t -> Action.t array) :
+  let init ?(eps=default_eps) value_fn
+    (action_provider : State.t -> Action.t array) :
     (State.t, Action.t) Agents.State_based_policy.t =
    let rand_float = Random.float 1.0 in
    fun (state:State.t) ->
@@ -55,7 +56,7 @@ struct
      if actions = CCArray.empty then failwith("no actions possible for state: " ^ State.show state) else
      let exploit = Random.run rand_float <= eps in
      if exploit then 
-       let best_act = Value_fn.best_action value_fn state actions in
+       let best_act = Value_function.best_action value_fn state actions in
        let (a,(_:float)) = best_act in
        a
      else
@@ -63,20 +64,21 @@ struct
        Random.run gen
 end
 
-module UCTPolicy(State: Agents.STATE) (Action : Action) =
+module UCTPolicy(Value_function: Value_function.S) =
 struct
 
-  module Value_fn = Value_function.Make(State)(Action)
+  module State = Value_function.State
+  module Action = Value_function.Action
 
   let init ?(c=2.0) value_fn (action_provider : State.t -> Action.t array) :
     (State.t, Action.t) Agents.State_based_policy.t =
     fun (state:State.t) ->
-      let n = Value_fn.count value_fn state in
+      let n = Value_function.count value_fn state in
       let actions = action_provider state in
       if actions = CCArray.empty then failwith("no actions possible for state: " ^ State.show state) else
-        let expectations = CCArray.map (fun action -> (action, Value_fn.value value_fn ~action state)) actions in
+        let expectations = CCArray.map (fun action -> (action, Value_function.value value_fn ~action state)) actions in
         let (a, exp) = CCArray.fold (fun ((best_action, best_exp) as best) ((cur_action, cur_exp) as cur) ->
-          let n_a = Value_fn.count value_fn ~action:cur_action state in
+          let n_a = Value_function.count value_fn ~action:cur_action state in
           let biased = if n_a = 0 then cur_exp +. c else
             cur_exp +. c *. sqrt (log (CCFloat.of_int n) /. (CCFloat.of_int n_a)) in
           if biased >= best_exp then cur else best)

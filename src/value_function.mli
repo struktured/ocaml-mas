@@ -8,16 +8,9 @@ module type STATE = sig type t [@@deriving show, ord] end
 module type S =
 sig
   module State : STATE
-
   module Action : Action
 
-  type t
-
-  val init :
-    count : (?action:Action.t -> State.t -> int) ->
-    value : (?action:Action.t -> State.t -> Reward.t) ->
-    update : (t -> Action.t -> State.t -> Reward.t -> unit) ->
-    name : string -> t
+  type t [@@deriving show]
 
   val value : t -> ?action:Action.t -> State.t -> Reward.t
   val count : t -> ?action:Action.t -> State.t -> int
@@ -27,5 +20,15 @@ sig
 end
 
 
+module type S_with_init =
+sig
+  include S
+  val init :
+    count : (?action:Action.t -> State.t -> int) ->
+    value : (?action:Action.t -> State.t -> Reward.t) ->
+    update : (t -> Action.t -> State.t -> Reward.t -> unit) ->
+    name : string -> t
+end
+
 module Make (State:STATE) (Action : Action) :
-  S with module Action = Action and module State = State
+  S_with_init with module Action = Action and module State = State

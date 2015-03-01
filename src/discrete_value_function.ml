@@ -1,17 +1,31 @@
 open Mas_core
 
 module type STATE = sig type t [@@deriving show, ord] end
-
 open Prob_cache_common
+
+module type S =
+  sig
+    include Value_function.S
+    module StateAction : sig type t = private
+      State of State.t | Action of Action.t [@@deriving show, ord] end
+
+    module Cache : 
+      module type of Prob_cache_containers.Set_model.Make(StateAction)
+    val init : ?prior_count:(?action:Action.t -> State.t -> int) ->
+      ?prior_reward:(?action:Action.t -> State.t -> Reward.t) ->
+      ?update_rule:Cache.update_rule -> string -> t
+  end
+
 (** Creates a discrete state value function- it maps discrete state and actions with
-    reward estimates by caching them explicitly *)
-module Make(State:STATE) (Action:Action) =
+    reward estimates by caching them explicitly. These are also typically classified
+    as tabular methods, in the reinforcement learning literature. *)
+module Make(State:STATE) (Action:Action) :
+  S with module State = State and module Action = Action =
 struct
   module Value_function = Value_function.Make(State)(Action)
-  type t = Value_function.t
-  module Action = Action
-  module State = State
-  module StateAction = struct type t = State of State.t | Action of Action.t [@@deriving show, ord] end
+  include Value_function
+  module StateAction = struct type t =
+    State of State.t | Action of Action.t [@@deriving show, ord] end
   open StateAction
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
 
@@ -34,11 +48,11 @@ struct
     | Some s ->
       let action = action_of events in f_s_a ?action s
 
-  let update cache action s r =
+  let _update cache action s r =
     let s_a = events_of ~action s in
     Cache.observe ~exp:r s_a cache
 
-  let count cache ?action s =
+  let _count cache ?action s =
     let s_a = events_of ?action s in
     Cache.count s_a cache
 
@@ -52,12 +66,9 @@ struct
       let events = events_of ?action s in Cache.exp events !cache
     in Value_function.init
       ~value
-      ~count:(fun ?action s -> count !cache ?action s)
-      ~update:(fun t action s r -> cache := update !cache action s r)
+      ~count:(fun ?action s -> _count !cache ?action s)
+      ~update:(fun t action s r -> cache := _update !cache action s r)
       ~name
-
-  let name = Value_function.name
-  let value = Value_function.value
 end
 
 
@@ -67,7 +78,7 @@ module Make_Q_Learner (State:STATE) (Action:Action) =
     module RingBuffer = CCRingBuffer.Make
       (struct type t = State.t * Action.t * Reward.t end)
 
-    module Q_Learner = Learning_rules.Q_learner.Make(Value_fn) 
+    module Q_Learner = Learning_rules.Q_learner.Make(Value_fn)
 
     let init ?alpha ?gamma name action_fn =
       let ring_buffer = RingBuffer.create ~bounded:true 2 in

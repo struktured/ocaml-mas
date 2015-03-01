@@ -23,12 +23,12 @@ struct
   type params = (Arm.t, Reward.t) Env.params
   let agent_reward obs = match (obs.action:Reward.t) with r -> r
 
-  module State_based_value_function = Discrete_value_function.Make(State)(Arm)
+  module Value_function = Discrete_value_function.Make(State)(Arm)
 
-  module BanditAgent = Agents.Make_state_based(State_based_value_function.Value_function)(Reward)
+  module BanditAgent = Agents.Make_state_based(Value_function)(Reward)
 
-  module GreedyPolicy = Policies.GreedyPolicy(State)(Arm)
-  module UCTPolicy = Policies.UCTPolicy(State)(Arm)
+  module GreedyPolicy = Policies.GreedyPolicy(Value_function)
+  module UCTPolicy = Policies.UCTPolicy(Value_function)
 
   let state_trans obs = ()
 
@@ -75,7 +75,7 @@ let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
       if w' > w then (w', k+1) else (w, k)) (0.0, 0) arm_weights in
   let num_arms = CCArray.length arm_rewards in
   let action_provider _ = CCArray.(0--(num_arms-1)) in
-  let value_function = State_based_value_function.init "discrete" in
+  let value_function = Value_function.init "discrete" in
   let policy = match policy with 
     | `Random -> Policies.RandomPolicy.init ?weights action_provider 
     | `Greedy -> GreedyPolicy.init ~eps value_function action_provider 
