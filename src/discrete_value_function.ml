@@ -9,11 +9,11 @@ module type S =
     module StateAction : sig type t = private
       State of State.t | Action of Action.t [@@deriving show, ord] end
 
-    module Cache : 
-      module type of Prob_cache_containers.Set_model.Make(StateAction)
+    type update_rule = Prob_cache_common.Update_rules.Update_fn.t
+
     val init : ?prior_count:(?action:Action.t -> State.t -> int) ->
       ?prior_reward:(?action:Action.t -> State.t -> Reward.t) ->
-      ?update_rule:Cache.update_rule -> string -> t
+      ?update_rule:update_rule -> string -> t
   end
 
 (** Creates a discrete state value function- it maps discrete state and actions with
@@ -28,6 +28,9 @@ struct
     State of State.t | Action of Action.t [@@deriving show, ord] end
   open StateAction
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
+
+  type update_rule = Prob_cache_common.Update_rules.Update_fn.t
+
 
   let events_of ?action s = Cache.Events.of_list (
     match action with
