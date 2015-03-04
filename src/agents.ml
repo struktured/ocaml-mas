@@ -1,9 +1,5 @@
 open Mas_core
 
-module type STATE =
-sig
-  type t [@@deriving show, ord]
-end
 
 (** Most reinforcement learning algorithms depend on a state
     abstraction. This strictly defines the transformation

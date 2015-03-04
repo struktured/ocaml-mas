@@ -1,13 +1,12 @@
 open Mas_core
 
-module type STATE = sig type t [@@deriving show, ord] end
 
 module type S =
 sig
-  module State : STATE
+  module State : State.S
   module Action : Action
   type 'a t = 'a -> Action.t -> State.t -> Reward.t -> 'a [@@deriving show]
 end
 
-module Make : functor (State:STATE) (Action:Action)
+module Make : functor (State:State.S) (Action:Action)
   -> S with module State = State and module Action = Action

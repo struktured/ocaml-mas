@@ -1,6 +1,5 @@
 open Mas_core
 
-module type STATE = sig type t [@@deriving show, ord] end
 open Prob_cache_common
 
 (** Defines a discrete state value function- it maps discrete state and actions with
@@ -22,7 +21,7 @@ module type S =
 (** Creates a discrete state value function- it maps discrete state and actions with
     reward estimates by caching them explicitly. These are also typically classified
     as tabular methods, in the reinforcement learning literature. *)
-module Make(State:STATE) (Action:Action) :
+module Make(State:State.S) (Action:Action) :
   S with module State = State and module Action = Action =
 struct
   module Value_function = Value_function.Make(State)(Action)
