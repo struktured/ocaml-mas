@@ -81,7 +81,7 @@ and
       type ('a, 'b) t = private {
         value : ?action:'a -> ('a, 'b) Observation.t -> Reward.t;
         count : ?action:'a -> ('a, 'b) Observation.t -> int;
-        update : action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit
+        update : ('a, 'b) t -> action:'a -> ('a, 'b) Observation.t -> Reward.t -> ('a, 'b) t
       } [@@deriving show]
   
       val value : ('a, 'b) t -> ?action: 'a -> ('a, 'b) Observation.t
@@ -98,7 +98,7 @@ and
 
 
       val update : ('a, 'b) t -> action : 'a -> ('a, 'b) Observation.t
-        -> Reward.t -> unit
+        -> Reward.t -> ('a, 'b) t
       (** Updates a value function instance. Given an action,
           new observation, and reward signal, update the underlying
           model of the value function *)
@@ -106,7 +106,7 @@ and
       val init : 
         value:(?action:'a -> ('a, 'b) Observation.t -> Reward.t) -> 
         count:(?action:'a -> ('a, 'b) Observation.t -> int) ->
-        update:(action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit) ->
+        update:(('a, 'b) t -> action:'a -> ('a, 'b) Observation.t -> Reward.t -> ('a, 'b) t) ->
         ('a, 'b) t
       (** Initializes a new value function given a [value] estimator,
           visitor [count] function, and an value [update] function *)
@@ -115,7 +115,7 @@ and
   type ('a, 'b) t = {
     value : ?action:'a -> ('a, 'b) Observation.t -> Reward.t;
     count : ?action:'a -> ('a, 'b) Observation.t -> int;
-    update : action:'a -> ('a, 'b) Observation.t -> Reward.t -> unit
+    update : ('a, 'b) t -> action:'a -> ('a, 'b) Observation.t -> Reward.t -> ('a, 'b) t
   } [@@deriving show]
   
   let init ~value ~count ~update =
@@ -123,7 +123,7 @@ and
 
   let value t = t.value
   let count t = t.count
-  let update t ~action s r = t.update ~action s r
+  let update t ~action s r = t.update t ~action s r
   end
 and 
   (** Observations are what other agents are given as input to react to (by applying their policies). 

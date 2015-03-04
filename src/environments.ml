@@ -76,14 +76,14 @@ struct
         let action = policy obs in
         let obs' = {agent;epoch=obs.epoch+1;action} in
         let agent_reward = (Agent.reward_fn agent) obs in
-        (Value_fn.update (Agent.value_fn agent)) ~action obs agent_reward;
+        ignore ((Value_fn.update (Agent.value_fn agent)) ~action obs agent_reward);
         {state with obs = From_agent obs';agent_reward}
       | From_agent (obs:('b, 'a) Observation.t) ->
         let policy = Agent.policy opponent in
         let action = policy obs in
         let obs' = {agent=opponent;epoch=obs.epoch+1;action} in
         let opponent_reward = (Agent.reward_fn opponent) obs in
-        (Value_fn.update (Agent.value_fn opponent)) ~action obs opponent_reward;
+        ignore ((Value_fn.update (Agent.value_fn opponent)) ~action obs opponent_reward);
         {state with obs = From_opponent obs';opponent_reward}
     )
     {params;agent;opponent;obs=params.init_obs;agent_reward=0.;opponent_reward=0.}

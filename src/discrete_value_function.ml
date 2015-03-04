@@ -3,6 +3,9 @@ open Mas_core
 module type STATE = sig type t [@@deriving show, ord] end
 open Prob_cache_common
 
+(** Defines a discrete state value function- it maps discrete state and actions with
+    reward estimates by caching them explicitly. These are also typically classified
+    as tabular methods, in the reinforcement learning literature. *)
 module type S =
   sig
     include Value_function.S
@@ -30,7 +33,6 @@ struct
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
 
   type update_rule = Prob_cache_common.Update_rules.Update_fn.t
-
 
   let events_of ?action s = Cache.Events.of_list (
     match action with
@@ -70,24 +72,6 @@ struct
     in Value_function.init
       ~value
       ~count:(fun ?action s -> _count !cache ?action s)
-      ~update:(fun t action s r -> cache := _update !cache action s r)
+      ~update:(fun t action s r -> cache := _update !cache action s r;t)
       ~name
-end
-
-
-module Make_Q_Learner (State:STATE) (Action:Action) =
-  struct
-    module Value_fn = Value_function.Make(State)(Action)
-    module RingBuffer = CCRingBuffer.Make
-      (struct type t = State.t * Action.t * Reward.t end)
-
-    module Q_Learner = Learning_rules.Q_learner.Make(Value_fn)
-
-    let init ?alpha ?gamma name action_fn =
-      let ring_buffer = RingBuffer.create ~bounded:true 2 in
-      let update_rule (value_fn:Value_fn.t) (a:Action.t) (s:State.t) (r:Reward.t) =
-        let s', a', r' = RingBuffer.peek_front ring_buffer in
-        let r'' = Q_Learner.update_best_action ~a ~s ~r ~s' ?alpha ?gamma ~value_fn ~actions:(action_fn s) in
-        RingBuffer.push_back ring_buffer (s, a, r); r'' in
-      update_rule
 end

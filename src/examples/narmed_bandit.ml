@@ -44,7 +44,7 @@ struct
       fun (_:int) -> noisy (CCRandom.run rand))) arm_rewards in
     let policy : (Reward.t, Arm.t) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
     Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0) 
-      ~value:(fun ?action obs -> 0.0) ~update:(fun ~action obs r -> ())) 
+      ~value:(fun ?action obs -> 0.0) ~update:(fun t ~action obs r -> t)) 
       ~name:((string_of_int (CCArray.length arm_rewards)) ^ "-armed bandit")
 
   let init ?arm_rewards ?num_arms ~trials ~(agent:agent) : (Arm.t, Reward.t) Env.t =
