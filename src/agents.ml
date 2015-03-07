@@ -24,7 +24,7 @@ module State_based_policy =
     types defined by the [Value_function] and 
     [Opp_action] parameters *)
 module Make_state_based (Value_function : Value_function.S)
-  (Opp_action:Action) =
+  (Opp_action:Action.S) =
   struct
     module State = Value_function.State
     module Action = Value_function.Action

@@ -1,9 +1,6 @@
 (** The type for reward signals, equal to float *)
 module Reward = Mas_intf.Reward
 
-(** Defines the minimum requirements for an action,
- * which that it is showable and comparable *)
-module type Action = sig type t [@@deriving show, ord] end
 
 (** Defines an agent and operations to run the agent within the environment *)
 module rec Agent :

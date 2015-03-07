@@ -1,5 +1,4 @@
 open Mas_core
-module type Action = Mas_core.Action
 
 (** This module is for any learner which uses one step 
    to compute updates to the value function *)
@@ -7,7 +6,8 @@ module One_step_learner = struct
   let default_gamma = 0.9
   let default_alpha = 0.2
 
-  let update ~a ~s ~r ~s' ?(alpha=default_alpha) ?(gamma=default_gamma) ~a' ~q_s'_a' ~q_s_a =
+  let update ~a ~s ~r ~s' ?(alpha=default_alpha) ?(gamma=default_gamma)
+    ~a' ~q_s'_a' ~q_s_a =
     q_s_a +. alpha *. (r +. gamma *. q_s'_a' -. q_s_a)
 end
 
@@ -26,16 +26,18 @@ struct
 
     let update_best_action ~a ~s ~r ~s' ?alpha ?gamma ~value_fn ~actions =
       let a', q_s'_a' = Value_function.best_action value_fn s' actions in
-      update ~a  ~a' ~q_s'_a' ~s ~r ~s' ?alpha ?gamma ~value_fn 
+      update ~a  ~a' ~q_s'_a' ~s ~r ~s' ?alpha ?gamma ~value_fn
     
     module RingBuffer = CCRingBuffer.Make
                           (struct type t = State.t * Action.t * Reward.t end)
 
     module Learning_rule = Value_function.Learning_rule
 
-    let init ?alpha ?gamma name action_fn : (Value_function.t * Reward.t) Learning_rule.t = 
+    let init ?alpha ?gamma name action_fn : 
+      (Value_function.t * Reward.t) Learning_rule.t = 
       let ring_buffer = RingBuffer.create ~bounded:true 2 in
-      let update_rule ((value_fn:Value_function.t), (orig:Reward.t)) (a:Action.t) (s:State.t) (r:Reward.t) =
+      let update_rule ((value_fn:Value_function.t),
+                       (orig:Reward.t)) (a:Action.t) (s:State.t) (r:Reward.t) =
         RingBuffer.push_back ring_buffer (s, a, r); 
         if RingBuffer.length ring_buffer <= 1 then (value_fn, orig) else
           let s', a', r' = RingBuffer.peek_front ring_buffer in

@@ -1,13 +1,12 @@
 open Mas_core
 
-
 (**
   The state based value function signature.
  *)
 module type S =
 sig
   module State : State.S
-  module Action : Action
+  module Action : Action.S
   module Learning_rule :
     Learning_rule.S with module State = State and module Action = Action
   type t [@@deriving show]
@@ -30,5 +29,5 @@ sig
     name : string -> t
 end
 
-module Make (State:State.S) (Action : Action) :
+module Make (State:State.S) (Action : Action.S) :
   S_with_init with module State = State and module Action = Action
