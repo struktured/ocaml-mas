@@ -4,7 +4,7 @@ open Prob_cache_common
 
 (** Defines a discrete state value function- it maps discrete state and actions with
     reward estimates by caching them explicitly. These are also typically classified
-    as tabular methods, in the reinforcement learning literature. *)
+    as tabular methods in the reinforcement learning literature. *)
 module type S =
   sig
     include Value_function.S
@@ -20,12 +20,11 @@ module type S =
 
 (** Creates a discrete state value function- it maps discrete state and actions with
     reward estimates by caching them explicitly. These are also typically classified
-    as tabular methods, in the reinforcement learning literature. *)
+    as tabular methods in the reinforcement learning literature. *)
 module Make(State:State.S) (Action:Action) :
   S with module State = State and module Action = Action =
 struct
-  module Value_function = Value_function.Make(State)(Action)
-  include Value_function
+  include Value_function.Make(State)(Action)
   module StateAction = struct type t =
     State of State.t | Action of Action.t [@@deriving show, ord] end
   open StateAction
@@ -68,9 +67,10 @@ struct
     let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
     let value ?action s =
       let events = events_of ?action s in Cache.exp events !cache
-    in Value_function.init
+    in init
       ~value
       ~count:(fun ?action s -> _count !cache ?action s)
       ~update:(fun t action s r -> cache := _update !cache action s r;t)
       ~name
+
 end

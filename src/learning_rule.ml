@@ -8,6 +8,7 @@ sig
   type 'a t = 'a -> Action.t -> State.t -> Reward.t -> 'a [@@deriving show]
 end
 
+
 module Make (State:State.S) (Action:Action)
   : S with module State = State and module Action = Action =
 struct
@@ -15,3 +16,4 @@ struct
   module Action = Action
   type 'a t = 'a -> Action.t -> State.t -> Reward.t -> 'a [@@deriving show]
 end
+
