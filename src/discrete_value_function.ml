@@ -27,22 +27,21 @@ struct
   include Value_function.Make(State)(Action)
   module StateAction = struct type t =
     State of State.t | Action of Action.t [@@deriving show, ord] end
-  open StateAction
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
 
   type update_rule = Prob_cache_common.Update_rules.Update_fn.t
 
   let events_of ?action s = Cache.Events.of_list (
     match action with
-    | Some a -> [State s; Action a]
-    | None -> [State s])
+    | Some a -> [StateAction.State s; StateAction.Action a]
+    | None -> [StateAction.State s])
 
   let state_of events : State.t option = let event_list = Cache.Events.to_list events in
-    let rec f_rec = function [] -> None | (State s)::l -> Some s | (_::l) -> f_rec l in
+    let rec f_rec = function [] -> None | (StateAction.State s)::l -> Some s | (_::l) -> f_rec l in
     f_rec event_list
 
   let action_of events : Action.t option = let event_list = Cache.Events.to_list events in
-    let rec f_rec = function [] -> None | (Action a)::l -> Some a | (_::l) -> f_rec l in
+    let rec f_rec = function [] -> None | (StateAction.Action a)::l -> Some a | (_::l) -> f_rec l in
     f_rec event_list
 
   let with_s_a (events:Cache.Events.t) (f_s_a: ?action:Action.t -> State.t -> 'a) (default:'a) =
@@ -59,11 +58,17 @@ struct
     let s_a = events_of ?action s in
     Cache.count s_a cache
 
-  let init ?prior_count ?prior_reward ?update_rule name =
+  let buffer_based_rule learning_rule = 
+    let module RB = CCRingBuffer.Make(struct type t = State.t * Action.t * Reward.t end) in
+    let rb = RB.create ~bounded:true 2 in
+    let learning_rule' = () in ()
+
+  let init ?prior_count ?prior_reward ?(learning_rule: (t * Reward.t) Learning_rule.t option) name =
     let prior_count = CCOpt.map (fun pc -> (fun events -> 
       with_s_a events pc 0)) prior_count in
     let prior_exp = CCOpt.map (fun pr -> (fun events ->
       with_s_a events pr 0.0)) prior_reward in
+    let update_rule = CCOpt.map (fun l -> fun ?orig ~obs ~cnt -> obs) learning_rule in
     let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
     let value ?action s =
       let events = events_of ?action s in Cache.exp events !cache
