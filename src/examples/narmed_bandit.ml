@@ -64,18 +64,22 @@ let arm_weights = Array.of_list [0.1;0.5;1.0]
 let eps = 0.85
 let trials = 150
 let c = 2.0
-
 type policy = [`Random | `Greedy | `UCT]
+type learning_rule = [`Mean_update | `Q_learner]
+module Q_learner = Learning_rules.Q_learner.Make(Value_function)
 
-let go ?(policy=`Greedy) ?(eps=eps) ?(c=c) ?weights
+let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weights
   ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) () =
   let arm_rewards = CCArray.map (fun x -> fun () -> x) arm_weights in
   let max_weight, max_index = 
     CCArray.foldi (fun (w, k) i w' -> 
       if w' > w then (w', k+1) else (w, k)) (0.0, 0) arm_weights in
   let num_arms = CCArray.length arm_rewards in
-  let action_provider _ = CCArray.(0--(num_arms-1)) in
-  let value_function = Value_function.init "discrete" in
+  let action_provider _ = CCArray.(0--(num_arms-1)) in 
+  let learning_rule = match learning_rule with
+    | `Mean_update -> None
+    | `Q_learner -> Some (Q_learner.init action_provider) in
+  let value_function = Value_function.init "discrete" ?learning_rule in
   let policy = match policy with 
     | `Random -> Policies.RandomPolicy.init ?weights action_provider 
     | `Greedy -> GreedyPolicy.init ~eps value_function action_provider 

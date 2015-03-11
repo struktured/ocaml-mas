@@ -11,11 +11,11 @@ module type S =
     module StateAction : sig type t = private
       State of State.t | Action of Action.t [@@deriving show, ord] end
 
-    type update_rule = Prob_cache_common.Update_rules.Update_fn.t
+    type unary_learning_rule = (t * Reward.t) Learning_rule.t
 
     val init : ?prior_count:(?action:Action.t -> State.t -> int) ->
       ?prior_reward:(?action:Action.t -> State.t -> Reward.t) ->
-      ?update_rule:update_rule -> string -> t
+      ?learning_rule:unary_learning_rule -> string -> t
   end
 
 (** Creates a discrete state value function- it maps discrete state and actions with
@@ -29,7 +29,7 @@ struct
     State of State.t | Action of Action.t [@@deriving show, ord] end
   module Cache = Prob_cache_containers.Set_model.Make(StateAction)
 
-  type update_rule = Prob_cache_common.Update_rules.Update_fn.t
+  type update_rule = StateAction.t Prob_cache_common.Update_rules.Update_fn.t
 
   let events_of ?action s = Cache.Events.of_list (
     match action with
@@ -40,9 +40,13 @@ struct
     let rec f_rec = function [] -> None | (StateAction.State s)::l -> Some s | (_::l) -> f_rec l in
     f_rec event_list
 
+  let state_of_exn events = CCOpt.get_exn (state_of events)
+
   let action_of events : Action.t option = let event_list = Cache.Events.to_list events in
     let rec f_rec = function [] -> None | (StateAction.Action a)::l -> Some a | (_::l) -> f_rec l in
     f_rec event_list
+
+  let action_of_exn events = CCOpt.get_exn (action_of events)
 
   let with_s_a (events:Cache.Events.t) (f_s_a: ?action:Action.t -> State.t -> 'a) (default:'a) =
     match state_of events with
@@ -58,24 +62,23 @@ struct
     let s_a = events_of ?action s in
     Cache.count s_a cache
 
-  let buffer_based_rule learning_rule = 
-    let module RB = CCRingBuffer.Make(struct type t = State.t * Action.t * Reward.t end) in
-    let rb = RB.create ~bounded:true 2 in
-    let learning_rule' = () in ()
+  type unary_learning_rule = (t * Reward.t) Learning_rule.t
 
-  let init ?prior_count ?prior_reward ?(learning_rule: (t * Reward.t) Learning_rule.t option) name =
+  let init ?prior_count ?prior_reward ?(learning_rule : unary_learning_rule option) name =
     let prior_count = CCOpt.map (fun pc -> (fun events -> 
       with_s_a events pc 0)) prior_count in
     let prior_exp = CCOpt.map (fun pr -> (fun events ->
       with_s_a events pr 0.0)) prior_reward in
-    let update_rule = CCOpt.map (fun l -> fun ?orig ~obs ~cnt -> obs) learning_rule in
+    let vf = ref None in
+    let update_rule = CCOpt.map (fun l -> fun ?(orig=0.0) ~obs ~exp ~cnt -> let t', r' = l 
+      (CCOpt.get_exn !vf, orig) (action_of_exn obs) (state_of_exn obs) exp in r') learning_rule in
     let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
     let value ?action s =
       let events = events_of ?action s in Cache.exp events !cache
     in init
       ~value
       ~count:(fun ?action s -> _count !cache ?action s)
-      ~update:(fun t action s r -> cache := _update !cache action s r;t)
+      ~update:(fun t action s r -> vf := Some t; cache := _update !cache action s r;t)
       ~name
 
 end

@@ -38,11 +38,11 @@ type t = {
       match Environment_2_agents.turn state with
       | Environment_2_agents.Agent as w ->
         let agent_reward = Environment_2_agents.reward state w in
-        let agent_avg = mean ~cnt:t.agent_epoch ~orig:t.agent_avg ~obs:agent_reward in
+        let agent_avg = mean ~cnt:t.agent_epoch ~obs:state ~orig:t.agent_avg ~exp:agent_reward in
         {t with who = Some w; agent_epoch = t.agent_epoch+1; agent_avg}
       | Environment_2_agents.Opponent as w ->
         let opponent_reward = Environment_2_agents.reward state w in
-        let opponent_avg = mean ~cnt:t.opponent_epoch ~orig:t.opponent_avg ~obs:opponent_reward in
+        let opponent_avg = mean ~cnt:t.opponent_epoch ~obs:state ~orig:t.opponent_avg ~exp:opponent_reward in
         {t with who = Some w; opponent_epoch=t.opponent_epoch+1; opponent_avg}
     in
     Gen_ext.fold_tuple folder 
