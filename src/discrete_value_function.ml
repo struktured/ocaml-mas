@@ -70,8 +70,9 @@ struct
     let prior_exp = CCOpt.map (fun pr -> (fun events ->
       with_s_a events pr 0.0)) prior_reward in
     let vf = ref None in
-    let update_rule = CCOpt.map (fun l -> fun ?(orig=0.0) ~obs ~exp ~cnt -> let t', r' = l 
-      (CCOpt.get_exn !vf, orig) (action_of_exn obs) (state_of_exn obs) exp in r') learning_rule in
+    let update_rule = CCOpt.map (fun l -> fun ?(orig=0.0) ~obs ~exp ~cnt -> 
+      let t', r' = try l (CCOpt.get_exn !vf, orig) (action_of_exn obs) (state_of_exn obs) exp 
+(* ---> *) with Invalid_argument e -> print_endline e (* TODO FIX ME *); CCOpt.get_exn !vf, orig in r') learning_rule in
     let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
     let value ?action s =
       let events = events_of ?action s in Cache.exp events !cache
