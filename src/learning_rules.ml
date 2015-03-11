@@ -33,7 +33,7 @@ struct
 
     module Learning_rule = Value_function.Learning_rule
 
-    let init ?alpha ?gamma name action_fn : 
+    let init ?alpha ?gamma action_fn : 
       (Value_function.t * Reward.t) Learning_rule.t = 
       let ring_buffer = RingBuffer.create ~bounded:true 2 in
       let update_rule ((value_fn:Value_function.t),
