@@ -65,14 +65,19 @@ struct
   type unary_learning_rule = (t * Reward.t) Learning_rule.t
 
   let init ?prior_count ?prior_reward ?(learning_rule : unary_learning_rule option) name =
-    let prior_count = CCOpt.map (fun pc -> (fun events -> 
+    let prior_count = CCOpt.map (fun pc -> (fun events ->
       with_s_a events pc 0)) prior_count in
     let prior_exp = CCOpt.map (fun pr -> (fun events ->
       with_s_a events pr 0.0)) prior_reward in
     let vf = ref None in
-    let update_rule = CCOpt.map (fun l -> fun ?(orig=0.0) ~obs ~exp ~cnt -> 
-      let t', r' = try l (CCOpt.get_exn !vf, orig) (action_of_exn obs) (state_of_exn obs) exp 
-(* ---> *) with Invalid_argument e -> print_endline e (* TODO FIX ME *); CCOpt.get_exn !vf, orig in r') learning_rule in
+    let update_rule = CCOpt.map (fun rule -> fun ?orig ~obs ~exp ~cnt ->
+      (* Only specialize the update rule when it's a state action pair
+         that is being updated *)
+      if action_of obs = None || state_of obs = None
+        then Prob_cache_common.Update_rules.mean ?orig ~obs ~exp ~cnt
+      else
+          let t', r' = rule (CCOpt.get_exn !vf, CCOpt.get 0.0 orig)
+            (action_of_exn obs) (state_of_exn obs) exp in r') learning_rule in
     let cache = ref (Cache.create ?prior_count ?prior_exp ?update_rule ~name) in
     let value ?action s =
       let events = events_of ?action s in Cache.exp events !cache
