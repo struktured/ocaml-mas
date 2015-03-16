@@ -1,7 +1,5 @@
 open Mas_core
 
-(** A simple two agent, turn based environment with a primary agent and an opponent agent. *)
-module Environment_2_agents : sig 
   open Observation
   
   (** Which agent's turn it is to act *)
@@ -97,8 +95,6 @@ struct
   let params t = t.params
   let reward t turn = match turn with Agent -> t.agent_reward | Opponent -> t.opponent_reward
   let epoch t = match t.obs with From_agent obs -> obs.epoch | From_opponent obs -> obs.epoch
-end
-
 
 let noisy ?(min=0.) ?(max=1.) x =
   let max_noise = if x >= -1. && x <= 1. then x *. x else sqrt((sqrt (CCFloat.abs x))) in

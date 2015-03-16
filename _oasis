@@ -8,29 +8,46 @@ Synopsis:    Multiagent system for OCaml
 BuildTools:  ocamlbuild
 Plugins: META (0.4), DevFiles (0.4)
 
-Library mas
-  Path:               src
+
+Library mas_core
+  Path:               src/core
   Pack:               true
-  Modules:            Gen_ext, Mas_intf, Action, Mas_core, State, Environments, Policies, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules, Mas_plot, Archimedes_plot
-  BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, archimedes
-  FindLibName:        mas
+  Modules:            Gen_ext, Mas_intf, Action, Mas_core, State, Policies, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
+  BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers
+  FindLibName:        core
+
+
+Library mas_environments
+  Path:               src/environments
+  Pack:               true
+  Modules:            Two_agent, Turn_based
+  BuildDepends:       core
+  FindLibName:        environments
+
+
+Library mas_plot
+  Path:               src/plot
+  Pack:               true
+  Modules:            Mas_plot, Archimedes_plot
+  BuildDepends:       core, environments, archimedes
+  FindLibName:        plot
 
 
 Library mas_examples
   Path:               src/examples
   Pack:               true
   Modules:            Narmed_bandit
-  BuildDepends:       mas
-  FindLibName:        mas_examples
+  BuildDepends:       core, environments, plot
+  FindLibName:        examples
 
 
 AlphaFeatures : ocamlbuild_more_args
 
-Document "mas"
+Document "mas_core"
   Type: ocamlbuild (0.4)
   BuildTools: ocamldoc
   Title: Multiagent System API 
   XOCamlbuildPath: .
   XOCamlbuildExtraArgs:
     "-docflags '-colorize-code -html -short-functors -charset utf-8'"
-  XOCamlbuildLibraries: mas
+  XOCamlbuildLibraries: core

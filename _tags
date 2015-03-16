@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 241d4764b03a961e103393f7668d5a7f)
+# DO NOT EDIT (digest: 7b9e8b9a9baf7d2c0553c36b1c08370e)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -14,33 +14,59 @@ true: annot, bin_annot
 ".git": not_hygienic
 "_darcs": -traverse
 "_darcs": not_hygienic
-# Library mas
-"src/mas.cmxs": use_mas
-"src/gen_ext.cmx": for-pack(Mas)
-"src/mas_intf.cmx": for-pack(Mas)
-"src/action.cmx": for-pack(Mas)
-"src/mas_core.cmx": for-pack(Mas)
-"src/state.cmx": for-pack(Mas)
-"src/environments.cmx": for-pack(Mas)
-"src/policies.cmx": for-pack(Mas)
-"src/agents.cmx": for-pack(Mas)
-"src/reward_functions.cmx": for-pack(Mas)
-"src/learning_rule.cmx": for-pack(Mas)
-"src/value_function.cmx": for-pack(Mas)
-"src/discrete_value_function.cmx": for-pack(Mas)
-"src/learning_rules.cmx": for-pack(Mas)
-"src/mas_plot.cmx": for-pack(Mas)
-"src/archimedes_plot.cmx": for-pack(Mas)
-<src/*.ml{,i,y}>: pkg_archimedes
-<src/*.ml{,i,y}>: pkg_containers
-<src/*.ml{,i,y}>: pkg_containers.misc
-<src/*.ml{,i,y}>: pkg_gen
-<src/*.ml{,i,y}>: pkg_ppx_deriving
-<src/*.ml{,i,y}>: pkg_ppx_deriving.iter
-<src/*.ml{,i,y}>: pkg_ppx_deriving.ord
-<src/*.ml{,i,y}>: pkg_ppx_deriving.show
-<src/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
-<src/*.ml{,i,y}>: pkg_prob_cache_containers
+# Library mas_core
+"src/core/mas_core.cmxs": use_mas_core
+"src/core/gen_ext.cmx": for-pack(Mas_core)
+"src/core/mas_intf.cmx": for-pack(Mas_core)
+"src/core/action.cmx": for-pack(Mas_core)
+"src/core/mas_core.cmx": for-pack(Mas_core)
+"src/core/state.cmx": for-pack(Mas_core)
+"src/core/policies.cmx": for-pack(Mas_core)
+"src/core/agents.cmx": for-pack(Mas_core)
+"src/core/reward_functions.cmx": for-pack(Mas_core)
+"src/core/learning_rule.cmx": for-pack(Mas_core)
+"src/core/value_function.cmx": for-pack(Mas_core)
+"src/core/discrete_value_function.cmx": for-pack(Mas_core)
+"src/core/learning_rules.cmx": for-pack(Mas_core)
+<src/core/*.ml{,i,y}>: pkg_containers
+<src/core/*.ml{,i,y}>: pkg_containers.misc
+<src/core/*.ml{,i,y}>: pkg_gen
+<src/core/*.ml{,i,y}>: pkg_ppx_deriving
+<src/core/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/core/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/core/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/core/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/core/*.ml{,i,y}>: pkg_prob_cache_containers
+# Library mas_environments
+"src/environments/mas_environments.cmxs": use_mas_environments
+"src/environments/two_agent.cmx": for-pack(Mas_environments)
+"src/environments/turn_based.cmx": for-pack(Mas_environments)
+<src/environments/*.ml{,i,y}>: pkg_containers
+<src/environments/*.ml{,i,y}>: pkg_containers.misc
+<src/environments/*.ml{,i,y}>: pkg_gen
+<src/environments/*.ml{,i,y}>: pkg_ppx_deriving
+<src/environments/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/environments/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/environments/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/environments/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/environments/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/environments/*.ml{,i,y}>: use_mas_core
+# Library mas_plot
+"src/plot/mas_plot.cmxs": use_mas_plot
+"src/plot/mas_plot.cmx": for-pack(Mas_plot)
+"src/plot/archimedes_plot.cmx": for-pack(Mas_plot)
+<src/plot/*.ml{,i,y}>: pkg_archimedes
+<src/plot/*.ml{,i,y}>: pkg_containers
+<src/plot/*.ml{,i,y}>: pkg_containers.misc
+<src/plot/*.ml{,i,y}>: pkg_gen
+<src/plot/*.ml{,i,y}>: pkg_ppx_deriving
+<src/plot/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/plot/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/plot/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/plot/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/plot/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/plot/*.ml{,i,y}>: use_mas_core
+<src/plot/*.ml{,i,y}>: use_mas_environments
 # Library mas_examples
 "src/examples/mas_examples.cmxs": use_mas_examples
 "src/examples/narmed_bandit.cmx": for-pack(Mas_examples)
@@ -54,5 +80,7 @@ true: annot, bin_annot
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving.show
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/examples/*.ml{,i,y}>: pkg_prob_cache_containers
-<src/examples/*.ml{,i,y}>: use_mas
+<src/examples/*.ml{,i,y}>: use_mas_core
+<src/examples/*.ml{,i,y}>: use_mas_environments
+<src/examples/*.ml{,i,y}>: use_mas_plot
 # OASIS_STOP
