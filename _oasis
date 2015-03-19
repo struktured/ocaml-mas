@@ -20,7 +20,7 @@ Library mas_core
 Library mas_environments
   Path:               src/environments
   Pack:               true
-  Modules:            Two_agent, Turn_based
+  Modules:            Two_agent
   BuildDepends:       core
   FindLibName:        environments
 
