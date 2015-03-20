@@ -1,4 +1,4 @@
-open Mas_core
+open Mas_system
 
 (**
   The state based value function signature.

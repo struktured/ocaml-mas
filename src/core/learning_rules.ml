@@ -1,4 +1,4 @@
-open Mas_core
+open Mas_system
 
 (** This module is for any learner which uses one step 
    to compute updates to the value function *)

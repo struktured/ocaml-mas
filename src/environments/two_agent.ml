@@ -1,5 +1,6 @@
-open Mas_core
-
+open Mas_system
+module type S = 
+  sig
   open Observation
   
   (** Which agent's turn it is to act *)
@@ -50,7 +51,9 @@ open Mas_core
   val epoch: ('a, 'b) state -> int
   (** Gets the current epoch (trial) count *)
 
-end = 
+end 
+
+module Impl : S = 
 struct 
   open Observation
   type who = Agent | Opponent [@@deriving show]
@@ -95,6 +98,7 @@ struct
   let params t = t.params
   let reward t turn = match turn with Agent -> t.agent_reward | Opponent -> t.opponent_reward
   let epoch t = match t.obs with From_agent obs -> obs.epoch | From_opponent obs -> obs.epoch
+end
 
 let noisy ?(min=0.) ?(max=1.) x =
   let max_noise = if x >= -1. && x <= 1. then x *. x else sqrt((sqrt (CCFloat.abs x))) in
@@ -105,4 +109,3 @@ let noisy ?(min=0.) ?(max=1.) x =
     if sum <= max && sum >= min then sum
     else let sum = x -. n in
     CCFloat.max min (CCFloat.min max sum)
-

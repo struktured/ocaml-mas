@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b702156ebf8b77dfc7ad921e8173e499)
+# DO NOT EDIT (digest: 894d6cad6470d034c1c612a7a74e5be8)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -19,7 +19,7 @@ true: annot, bin_annot
 "src/core/gen_ext.cmx": for-pack(Mas_core)
 "src/core/mas_intf.cmx": for-pack(Mas_core)
 "src/core/action.cmx": for-pack(Mas_core)
-"src/core/mas_core.cmx": for-pack(Mas_core)
+"src/core/mas_system.cmx": for-pack(Mas_core)
 "src/core/state.cmx": for-pack(Mas_core)
 "src/core/policies.cmx": for-pack(Mas_core)
 "src/core/agents.cmx": for-pack(Mas_core)
@@ -52,7 +52,7 @@ true: annot, bin_annot
 <src/environments/*.ml{,i,y}>: use_mas_core
 # Library mas_plot
 "src/plot/mas_plot.cmxs": use_mas_plot
-"src/plot/mas_plot.cmx": for-pack(Mas_plot)
+"src/plot/plot.cmx": for-pack(Mas_plot)
 "src/plot/archimedes_plot.cmx": for-pack(Mas_plot)
 <src/plot/*.ml{,i,y}>: pkg_archimedes
 <src/plot/*.ml{,i,y}>: pkg_containers
