@@ -1,4 +1,4 @@
-open Mas_core
+open Mas_system
 
 module State_based_reward_fn =
  struct

@@ -1,4 +1,4 @@
-open Mas_core
+open Mas_system
 
 
 (** Most reinforcement learning algorithms depend on a state
@@ -47,7 +47,7 @@ module Make_state_based (Value_function : Value_function.S)
          let s = state_trans obs in 
          let _ = (Value_function.update value_fn) value_fn action s r in
          t in
-      Mas_core.Value_fn.init ~count ~value ~update in
+      Mas_system.Value_fn.init ~count ~value ~update in
       Agent.init policy' reward_fn' value_fn' name
   end
 

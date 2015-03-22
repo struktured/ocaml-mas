@@ -9,7 +9,11 @@ PKG gen
 PKG sequence
 PKG prob_cache_containers
 PKG archimedes
+PKG oml
 S src
+S src/core
+S src/environments
+S src/plot
 S src/examples
-B _build/src
+B _build/src/**
 
