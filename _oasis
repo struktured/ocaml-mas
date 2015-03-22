@@ -13,7 +13,7 @@ Library mas_core
   Path:               src/core
   Pack:               true
   Modules:            Gen_ext, Mas_intf, Action, Mas_system, State, Policies, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
-  BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers
+  BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        core
 
 
@@ -28,7 +28,7 @@ Library mas_environments
 Library mas_plot
   Path:               src/plot
   Pack:               true
-  Modules:            Plot, Archimedes_plot
+  Modules:            Decorators, Archimedes_plot
   BuildDepends:       core, environments, archimedes
   FindLibName:        plot
 

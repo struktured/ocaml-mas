@@ -1,6 +1,5 @@
-open Mas
-open Mas_core
-open Environments
+open Mas_system
+open Mas_environments
 
 
 module NArmedBandit =
@@ -8,8 +7,8 @@ struct
   let last_plot = ref None
 
   open Observation
-  module Env = Environment_2_agents
-  open Environment_2_agents
+  module Env = Two_agent
+  open Two_agent
   module Arm = struct type t = int [@@deriving show, ord] end
   module Reward = struct type t = float [@@deriving show, ord] end
   module State =
@@ -21,27 +20,25 @@ struct
   type opponent = (Reward.t, Arm.t) Agent.t [@@deriving show]
   type agent = (Arm.t, Reward.t) Agent.t [@@deriving show]
   type params = (Arm.t, Reward.t) Env.params
-  let agent_reward obs = match (obs.action:Reward.t) with r -> r
-
   module Value_function = Discrete_value_function.Make(State)(Arm)
 
   module BanditAgent = Agents.Make_state_based(Value_function)(Reward)
 
   module GreedyPolicy = Policies.GreedyPolicy(Value_function)
   module UCTPolicy = Policies.UCTPolicy(Value_function)
+  let agent_reward (obs:(BanditAgent.Action.t, Reward.t) Observation.t) = match (obs.action:Reward.t) with r -> r
 
   let state_trans obs = ()
 
   let init_agent policy value_fn name =
-    BanditAgent.init policy state_trans value_fn agent_reward name
+    BanditAgent.init policy state_trans value_fn agent_reward ~name
 
   let default_arms = 5
 
   let init_opponent ?arm_rewards ?(num_arms=default_arms) () : opponent =
-    let rand = CCRandom.float 1.0 in
     let open Gen.Infix in
     let arm_rewards = CCOpt.get_lazy (fun () -> Gen.to_array (Gen.(0--(num_arms-1)) >>|
-      fun (_:int) -> noisy (CCRandom.run rand))) arm_rewards in
+      fun (_:int) -> Oml.Random_normal.random_normal ~mean:0.5 ~std:1.0 ())) arm_rewards in
     let policy : (Reward.t, Arm.t) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
     Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0)
       ~value:(fun ?action obs -> 0.0) ~update:(fun t ~action obs r -> t))
@@ -57,8 +54,8 @@ struct
 end
 
 open NArmedBandit
-module Env = Environment_2_agents
-module R = Mas_plot.Running_average
+module Env = Two_agent
+module R = Mas_plot.Decorators.Running_average
 
 let arm_weights = Array.of_list [0.1;0.5;1.0]
 let eps = 0.85
@@ -95,7 +92,7 @@ let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weight
     ~turn:player_turn ~ub:(fun s -> max_weight) env) env plot in
   let print (s, avg) =
     let reward = Env.reward s Env.Agent in
-    print_endline ("State: " ^ Environment_2_agents.show_state Arm.pp Reward.pp s);
+    print_endline ("State: " ^ Two_agent.show_state Arm.pp Reward.pp s);
     print_endline (
       "Epoch: " ^ string_of_int avg.R.agent_epoch ^
       ", Reward: " ^ Reward.show reward ^

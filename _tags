@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 894d6cad6470d034c1c612a7a74e5be8)
+# DO NOT EDIT (digest: 9c180d8f81c0eeff0a3367d29a6d4c07)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -31,6 +31,7 @@ true: annot, bin_annot
 <src/core/*.ml{,i,y}>: pkg_containers
 <src/core/*.ml{,i,y}>: pkg_containers.misc
 <src/core/*.ml{,i,y}>: pkg_gen
+<src/core/*.ml{,i,y}>: pkg_oml
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -43,6 +44,7 @@ true: annot, bin_annot
 <src/environments/*.ml{,i,y}>: pkg_containers
 <src/environments/*.ml{,i,y}>: pkg_containers.misc
 <src/environments/*.ml{,i,y}>: pkg_gen
+<src/environments/*.ml{,i,y}>: pkg_oml
 <src/environments/*.ml{,i,y}>: pkg_ppx_deriving
 <src/environments/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/environments/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -52,12 +54,13 @@ true: annot, bin_annot
 <src/environments/*.ml{,i,y}>: use_mas_core
 # Library mas_plot
 "src/plot/mas_plot.cmxs": use_mas_plot
-"src/plot/plot.cmx": for-pack(Mas_plot)
+"src/plot/decorators.cmx": for-pack(Mas_plot)
 "src/plot/archimedes_plot.cmx": for-pack(Mas_plot)
 <src/plot/*.ml{,i,y}>: pkg_archimedes
 <src/plot/*.ml{,i,y}>: pkg_containers
 <src/plot/*.ml{,i,y}>: pkg_containers.misc
 <src/plot/*.ml{,i,y}>: pkg_gen
+<src/plot/*.ml{,i,y}>: pkg_oml
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -73,6 +76,7 @@ true: annot, bin_annot
 <src/examples/*.ml{,i,y}>: pkg_containers
 <src/examples/*.ml{,i,y}>: pkg_containers.misc
 <src/examples/*.ml{,i,y}>: pkg_gen
+<src/examples/*.ml{,i,y}>: pkg_oml
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving.ord

@@ -1,9 +1,9 @@
 open Gen.Infix
-open Environments
+open Mas_environments
 module A = Archimedes
 
 type t = {viewport: A.Viewport.t}
-module R = Mas_plot.Running_average
+module R = Decorators.Running_average
 
 let init ?(viewport=A.init ["graphics"]) () =
   let p = { viewport } in p
@@ -20,7 +20,7 @@ let append p x y =
     A.Path.move_to p orig_x orig_y;
     A.Path.line_to p x y
   
-let running_avg t ?(turn=Environment_2_agents.Agent) 
+let running_avg t ?(turn=Two_agent.Agent) 
   ?(ub=fun s -> 1.0) g = 
   A.Viewport.title t.viewport "Average Reward Over Time";
   A.Viewport.xlabel t.viewport "Epoch";
@@ -28,13 +28,13 @@ let running_avg t ?(turn=Environment_2_agents.Agent)
   A.Axes.box ~grid:true t.viewport;
   let p = A.Path.make() in
   let p_ub = A.Path.make() in
-  Mas_plot.Running_average.decorate g |>
+  R.decorate g |>
   Gen.filter (fun (_, t) -> match R.who t with 
     | Some w -> w = turn 
     | None -> false)
   |>
   Gen_ext.consume_second
-    (fun ((s:('a, 'b) Environment_2_agents.state), avg) -> 
+    (fun ((s:('a, 'b) Two_agent.state), avg) -> 
        let x = CCFloat.of_int avg.R.agent_epoch in
        let y = avg.R.agent_avg in
        let y_ub = ub s in 
