@@ -14,31 +14,31 @@ Library mas_core
   Pack:               true
   Modules:            Gen_ext, Mas_intf, Action, Mas_system, State, Policies, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
   BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
-  FindLibName:        core
+  FindLibName:        mas_core
 
 
 Library mas_environments
   Path:               src/environments
   Pack:               true
   Modules:            Two_agent
-  BuildDepends:       core
-  FindLibName:        environments
+  BuildDepends:       mas_core
+  FindLibName:        mas_environments
 
 
 Library mas_plot
   Path:               src/plot
   Pack:               true
   Modules:            Decorators, Archimedes_plot
-  BuildDepends:       core, environments, archimedes
-  FindLibName:        plot
+  BuildDepends:       mas_core, mas_environments, archimedes
+  FindLibName:        mas_plot
 
 
 Library mas_examples
   Path:               src/examples
   Pack:               true
   Modules:            Narmed_bandit
-  BuildDepends:       core, environments, plot
-  FindLibName:        examples
+  BuildDepends:       mas_core, mas_environments, mas_plot
+  FindLibName:        mas_examples
 
 
 AlphaFeatures : ocamlbuild_more_args
@@ -50,4 +50,4 @@ Document "mas_core"
   XOCamlbuildPath: .
   XOCamlbuildExtraArgs:
     "-docflags '-colorize-code -html -short-functors -charset utf-8'"
-  XOCamlbuildLibraries: core
+  XOCamlbuildLibraries: mas_core
