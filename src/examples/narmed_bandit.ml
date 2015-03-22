@@ -1,6 +1,7 @@
+open Mas_core
 open Mas_system
 open Mas_environments
-
+open Mas_plot
 
 module NArmedBandit =
 struct
@@ -55,7 +56,7 @@ end
 
 open NArmedBandit
 module Env = Two_agent
-module R = Mas_plot.Decorators.Running_average
+module R = Decorators.Running_average
 
 let arm_weights = Array.of_list [0.1;0.5;1.0]
 let eps = 0.85

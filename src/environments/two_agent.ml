@@ -1,4 +1,4 @@
-open Mas_system
+open Mas_core.Mas_system
   open Observation
   type who = Agent | Opponent [@@deriving show]
   type ('a, 'b) obs = From_agent of ('b, 'a) Observation.t 

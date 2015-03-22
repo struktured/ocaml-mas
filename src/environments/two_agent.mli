@@ -1,4 +1,4 @@
-open Mas_system
+open Mas_core.Mas_system
   open Observation
   
   (** Which agent's turn it is to act *)

@@ -1,4 +1,5 @@
-open Mas_system
+open Mas_core
+open Mas_core.Mas_system
 let mean = Prob_cache_common.Update_rules.mean
 
 open Mas_environments

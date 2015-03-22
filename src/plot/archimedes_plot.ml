@@ -1,3 +1,4 @@
+open Mas_core
 open Gen.Infix
 open Mas_environments
 module A = Archimedes
