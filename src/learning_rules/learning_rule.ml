@@ -1,5 +1,5 @@
+open Mas_core
 open Mas_system
-
 
 module type S =
 sig

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: cfcec1fcba3a2e9a39b2883e6803de0e)
+# DO NOT EDIT (digest: 50c3079325378a8424c72d38abad0c61)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -22,12 +22,7 @@ true: annot, bin_annot
 "src/core/action.cmx": for-pack(Mas_core)
 "src/core/mas_system.cmx": for-pack(Mas_core)
 "src/core/state.cmx": for-pack(Mas_core)
-"src/core/agents.cmx": for-pack(Mas_core)
 "src/core/reward_functions.cmx": for-pack(Mas_core)
-"src/core/learning_rule.cmx": for-pack(Mas_core)
-"src/core/value_function.cmx": for-pack(Mas_core)
-"src/core/discrete_value_function.cmx": for-pack(Mas_core)
-"src/core/learning_rules.cmx": for-pack(Mas_core)
 <src/core/*.ml{,i,y}>: pkg_containers
 <src/core/*.ml{,i,y}>: pkg_containers.misc
 <src/core/*.ml{,i,y}>: pkg_gen
@@ -38,6 +33,21 @@ true: annot, bin_annot
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving.show
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/core/*.ml{,i,y}>: pkg_prob_cache_containers
+# Library mas_value_functions
+"src/value_functions/mas_value_functions.cmxs": use_mas_value_functions
+"src/value_functions/value_function.cmx": for-pack(Mas_value_functions)
+"src/value_functions/discrete_value_function.cmx": for-pack(Mas_value_functions)
+<src/value_functions/*.ml{,i,y}>: pkg_containers
+<src/value_functions/*.ml{,i,y}>: pkg_containers.misc
+<src/value_functions/*.ml{,i,y}>: pkg_gen
+<src/value_functions/*.ml{,i,y}>: pkg_oml
+<src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving
+<src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/value_functions/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/value_functions/*.ml{,i,y}>: use_mas_core
 # Library mas_policies
 "src/policies/mas_policies.cmxs": use_mas_policies
 "src/policies/random_policy.cmx": for-pack(Mas_policies)
@@ -54,6 +64,42 @@ true: annot, bin_annot
 <src/policies/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/policies/*.ml{,i,y}>: pkg_prob_cache_containers
 <src/policies/*.ml{,i,y}>: use_mas_core
+<src/policies/*.ml{,i,y}>: use_mas_value_functions
+# Library mas_learning_rules
+"src/learning_rules/mas_learning_rules.cmxs": use_mas_learning_rules
+"src/learning_rules/learning_rule.cmx": for-pack(Mas_learning_rules)
+"src/learning_rules/q_learner.cmx": for-pack(Mas_learning_rules)
+"src/learning_rules/sarsa_learner.cmx": for-pack(Mas_learning_rules)
+<src/learning_rules/*.ml{,i,y}>: pkg_containers
+<src/learning_rules/*.ml{,i,y}>: pkg_containers.misc
+<src/learning_rules/*.ml{,i,y}>: pkg_gen
+<src/learning_rules/*.ml{,i,y}>: pkg_oml
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/learning_rules/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/learning_rules/*.ml{,i,y}>: use_mas_core
+<src/learning_rules/*.ml{,i,y}>: use_mas_policies
+<src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
+# Library mas_agents
+"src/agents/mas_agents.cmxs": use_mas_agents
+"src/agents/state_based_agent.cmx": for-pack(Mas_agents)
+<src/agents/*.ml{,i,y}>: pkg_containers
+<src/agents/*.ml{,i,y}>: pkg_containers.misc
+<src/agents/*.ml{,i,y}>: pkg_gen
+<src/agents/*.ml{,i,y}>: pkg_oml
+<src/agents/*.ml{,i,y}>: pkg_ppx_deriving
+<src/agents/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/agents/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/agents/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/agents/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/agents/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/agents/*.ml{,i,y}>: use_mas_core
+<src/agents/*.ml{,i,y}>: use_mas_learning_rules
+<src/agents/*.ml{,i,y}>: use_mas_policies
+<src/agents/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_environments
 "src/environments/mas_environments.cmxs": use_mas_environments
 "src/environments/two_agent.cmx": for-pack(Mas_environments)
@@ -68,6 +114,7 @@ true: annot, bin_annot
 <src/environments/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/environments/*.ml{,i,y}>: pkg_prob_cache_containers
 <src/environments/*.ml{,i,y}>: use_mas_core
+<src/environments/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_plot
 "src/plot/mas_plot.cmxs": use_mas_plot
 "src/plot/decorators.cmx": for-pack(Mas_plot)
@@ -83,8 +130,12 @@ true: annot, bin_annot
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving.show
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/plot/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/plot/*.ml{,i,y}>: use_mas_agents
 <src/plot/*.ml{,i,y}>: use_mas_core
 <src/plot/*.ml{,i,y}>: use_mas_environments
+<src/plot/*.ml{,i,y}>: use_mas_learning_rules
+<src/plot/*.ml{,i,y}>: use_mas_policies
+<src/plot/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_examples
 "src/examples/mas_examples.cmxs": use_mas_examples
 "src/examples/narmed_bandit.cmx": for-pack(Mas_examples)
@@ -99,8 +150,11 @@ true: annot, bin_annot
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving.show
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/examples/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/examples/*.ml{,i,y}>: use_mas_agents
 <src/examples/*.ml{,i,y}>: use_mas_core
 <src/examples/*.ml{,i,y}>: use_mas_environments
+<src/examples/*.ml{,i,y}>: use_mas_learning_rules
 <src/examples/*.ml{,i,y}>: use_mas_plot
 <src/examples/*.ml{,i,y}>: use_mas_policies
+<src/examples/*.ml{,i,y}>: use_mas_value_functions
 # OASIS_STOP

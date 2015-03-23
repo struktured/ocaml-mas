@@ -5,6 +5,7 @@
 *)
 open Mas_core
 open Mas_system
+open Mas_value_functions
 
 open Prob_cache_containers
 
