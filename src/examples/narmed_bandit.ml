@@ -2,6 +2,7 @@ open Mas_core
 open Mas_system
 open Mas_environments
 open Mas_plot
+open Mas_policies
 
 module NArmedBandit =
 struct
@@ -25,8 +26,8 @@ struct
 
   module BanditAgent = Agents.Make_state_based(Value_function)(Reward)
 
-  module GreedyPolicy = Policies.GreedyPolicy(Value_function)
-  module UCTPolicy = Policies.UCTPolicy(Value_function)
+  module Greedy_policy = Greedy_policy.Make(Value_function)
+  module Uct_policy = Uct_policy.Make(Value_function)
   let agent_reward (obs:(BanditAgent.Action.t, Reward.t) Observation.t) = match (obs.action:Reward.t) with r -> r
 
   let state_trans obs = ()
@@ -81,9 +82,9 @@ let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weight
     | `Q_learner -> Some (Q_learner.init action_provider) in
   let value_function = Value_function.init "discrete" ?learning_rule in
   let policy = match policy with 
-    | `Random -> Policies.RandomPolicy.init ?weights action_provider
-    | `Greedy -> GreedyPolicy.init ~eps value_function action_provider
-    | `UCT -> UCTPolicy.init ~c value_function action_provider in
+    | `Random -> Random_policy.init ?weights action_provider
+    | `Greedy -> Greedy_policy.init ~eps value_function action_provider
+    | `UCT -> Uct_policy.init ~c value_function action_provider in
   let env = NArmedBandit.init_with_policy
               ~arm_rewards ~trials policy value_function in
   let plot = if show_plot then Some (Archimedes_plot.init ()) else None in

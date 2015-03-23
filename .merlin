@@ -12,6 +12,7 @@ PKG archimedes
 PKG oml
 S src
 S src/core
+S src/policies
 S src/environments
 S src/plot
 S src/examples

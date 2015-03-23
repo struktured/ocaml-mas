@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 9c180d8f81c0eeff0a3367d29a6d4c07)
+# DO NOT EDIT (digest: cfcec1fcba3a2e9a39b2883e6803de0e)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -17,11 +17,11 @@ true: annot, bin_annot
 # Library mas_core
 "src/core/mas_core.cmxs": use_mas_core
 "src/core/gen_ext.cmx": for-pack(Mas_core)
+"src/core/sampling.cmx": for-pack(Mas_core)
 "src/core/mas_intf.cmx": for-pack(Mas_core)
 "src/core/action.cmx": for-pack(Mas_core)
 "src/core/mas_system.cmx": for-pack(Mas_core)
 "src/core/state.cmx": for-pack(Mas_core)
-"src/core/policies.cmx": for-pack(Mas_core)
 "src/core/agents.cmx": for-pack(Mas_core)
 "src/core/reward_functions.cmx": for-pack(Mas_core)
 "src/core/learning_rule.cmx": for-pack(Mas_core)
@@ -38,6 +38,22 @@ true: annot, bin_annot
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving.show
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/core/*.ml{,i,y}>: pkg_prob_cache_containers
+# Library mas_policies
+"src/policies/mas_policies.cmxs": use_mas_policies
+"src/policies/random_policy.cmx": for-pack(Mas_policies)
+"src/policies/greedy_policy.cmx": for-pack(Mas_policies)
+"src/policies/uct_policy.cmx": for-pack(Mas_policies)
+<src/policies/*.ml{,i,y}>: pkg_containers
+<src/policies/*.ml{,i,y}>: pkg_containers.misc
+<src/policies/*.ml{,i,y}>: pkg_gen
+<src/policies/*.ml{,i,y}>: pkg_oml
+<src/policies/*.ml{,i,y}>: pkg_ppx_deriving
+<src/policies/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/policies/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/policies/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/policies/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/policies/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/policies/*.ml{,i,y}>: use_mas_core
 # Library mas_environments
 "src/environments/mas_environments.cmxs": use_mas_environments
 "src/environments/two_agent.cmx": for-pack(Mas_environments)
@@ -86,4 +102,5 @@ true: annot, bin_annot
 <src/examples/*.ml{,i,y}>: use_mas_core
 <src/examples/*.ml{,i,y}>: use_mas_environments
 <src/examples/*.ml{,i,y}>: use_mas_plot
+<src/examples/*.ml{,i,y}>: use_mas_policies
 # OASIS_STOP

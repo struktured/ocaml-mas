@@ -12,9 +12,17 @@ Plugins: META (0.4), DevFiles (0.4)
 Library mas_core
   Path:               src/core
   Pack:               true
-  Modules:            Gen_ext, Mas_intf, Action, Mas_system, State, Policies, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
+  Modules:            Gen_ext, Sampling, Mas_intf, Action, Mas_system, State, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
   BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        mas_core
+
+
+Library mas_policies
+  Path:               src/policies
+  Pack:               true
+  Modules:            Random_policy, Greedy_policy, Uct_policy
+  BuildDepends:       mas_core
+  FindLibName:        mas_policies
 
 
 Library mas_environments
@@ -37,7 +45,7 @@ Library mas_examples
   Path:               src/examples
   Pack:               true
   Modules:            Narmed_bandit
-  BuildDepends:       mas_core, mas_environments, mas_plot
+  BuildDepends:       mas_core, mas_environments, mas_policies, mas_plot
   FindLibName:        mas_examples
 
 
