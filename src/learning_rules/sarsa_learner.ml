@@ -29,7 +29,7 @@ struct
       RingBuffer.push_back ring_buffer (s, a, r);
       if RingBuffer.length ring_buffer <= 1 then (value_fn, orig) else
         let s', a', r' = RingBuffer.peek_front ring_buffer in
-        let r'' = updateLearning_rule, 
+        let r'' = update
                     ~a ~a' ~s ~r ~s' ?alpha ?gamma ?q_s'_a':None ~value_fn ~actions:(action_fn s) in
         (value_fn, r'') in update_rule
 end

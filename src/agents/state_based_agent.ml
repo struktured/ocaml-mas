@@ -13,15 +13,6 @@ module State_transform =
     type ('s, 'a, 'b) t = ('a, 'b) Observation.t -> 's [@@deriving show]
   end
 
-(**
-  A state base policy is a function which given states 
-  of type ['s], it returns actions of type ['a] *)
-module State_based_policy =
- struct
-  type ('s, 'a) t = 's -> 'a [@@deriving show]
- end
-
-
 (** Creates a state based agent with state and action
     types defined by the [Value_function] and 
     [Opp_action] parameters *)

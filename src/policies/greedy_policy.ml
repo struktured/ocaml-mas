@@ -9,7 +9,7 @@ open Mas_value_functions
 
 open Prob_cache_containers
 
-module Random = Sampling.Random
+module Random = Sampling_ext.Random
 module Make(Value_function : Value_function.S) =
 struct
   let default_eps = 0.90
@@ -18,7 +18,7 @@ struct
 
   let init ?(eps=default_eps) value_fn
         (action_provider : State.t -> Action.t array) :
-    (State.t, Action.t) Agents.State_based_policy.t =
+    (State.t, Action.t) State_based_policy.t =
     let rand_float = Random.float 1.0 in
     fun (state:State.t) ->
       let actions = action_provider state in
