@@ -1,6 +1,5 @@
 open Mas_system
 
-
 module type S =
 sig
   module State : State.S

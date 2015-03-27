@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 011e5f31f1d6e19fa5e7f04f67db0f52) *)
+(* DO NOT EDIT (digest: 69cbd1ffe119a220bfe0074c725d8482) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -610,7 +610,10 @@ let package_default =
      MyOCamlbuildBase.lib_ocaml =
        [
           ("mas_core", ["src/core"], []);
+          ("mas_value_functions", ["src/value_functions"], []);
+          ("mas_learning_rules", ["src/learning_rules"], []);
           ("mas_policies", ["src/policies"], []);
+          ("mas_agents", ["src/agents"], []);
           ("mas_environments", ["src/environments"], []);
           ("mas_plot", ["src/plot"], []);
           ("mas_examples", ["src/examples"], [])
@@ -619,11 +622,34 @@ let package_default =
      flags = [];
      includes =
        [
-          ("src/policies", ["src/core"]);
-          ("src/plot", ["src/core"; "src/environments"]);
+          ("src/value_functions", ["src/core"]);
+          ("src/policies", ["src/core"; "src/value_functions"]);
+          ("src/plot",
+            [
+               "src/agents";
+               "src/core";
+               "src/environments";
+               "src/value_functions"
+            ]);
+          ("src/learning_rules", ["src/core"; "src/value_functions"]);
           ("src/examples",
-            ["src/core"; "src/environments"; "src/plot"; "src/policies"]);
-          ("src/environments", ["src/core"])
+            [
+               "src/agents";
+               "src/core";
+               "src/environments";
+               "src/learning_rules";
+               "src/plot";
+               "src/policies";
+               "src/value_functions"
+            ]);
+          ("src/environments", ["src/core"; "src/value_functions"]);
+          ("src/agents",
+            [
+               "src/core";
+               "src/learning_rules";
+               "src/policies";
+               "src/value_functions"
+            ])
        ]
   }
   ;;
@@ -632,6 +658,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 636 "myocamlbuild.ml"
+# 662 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

@@ -3,6 +3,9 @@ open Mas_system
 open Mas_environments
 open Mas_plot
 open Mas_policies
+open Mas_value_functions
+open Mas_learning_rules
+open Mas_agents
 
 module NArmedBandit =
 struct
@@ -24,7 +27,7 @@ struct
   type params = (Arm.t, Reward.t) Env.params
   module Value_function = Discrete_value_function.Make(State)(Arm)
 
-  module BanditAgent = Agents.Make_state_based(Value_function)(Reward)
+  module BanditAgent = State_based_agent.Make(Value_function)(Reward)
 
   module Greedy_policy = Greedy_policy.Make(Value_function)
   module Uct_policy = Uct_policy.Make(Value_function)
@@ -40,7 +43,7 @@ struct
   let init_opponent ?arm_rewards ?(num_arms=default_arms) () : opponent =
     let open Gen.Infix in
     let arm_rewards = CCOpt.get_lazy (fun () -> Gen.to_array (Gen.(0--(num_arms-1)) >>|
-      fun (_:int) -> Oml.Random_normal.random_normal ~mean:0.5 ~std:1.0 ())) arm_rewards in
+      fun (_:int) -> Oml.Sampling.normal ~mean:0.5 ~std:1.0 ())) arm_rewards in
     let policy : (Reward.t, Arm.t) Policy.t = fun obs -> match obs.action with a -> (arm_rewards.(a) ()) in
     Agent.init policy (fun obs -> 0.0) (Value_fn.init ~count:(fun ?action obs -> 0)
       ~value:(fun ?action obs -> 0.0) ~update:(fun t ~action obs r -> t))
@@ -65,8 +68,8 @@ let trials = 150
 let c = 2.0
 type policy = [`Random | `Greedy | `UCT]
 type learning_rule = [`Mean_update | `Q_learner]
-module Q_learner = Learning_rules.Q_learner.Make(Value_function)
-module Sarsa_learner = Learning_rules.Sarsa_learner.Make(Value_function)
+module Q_learner = Q_learner.Make(Value_function)
+module Sarsa_learner = Sarsa_learner.Make(Value_function)
 
 let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weights
   ?(trials=trials) ?(arm_weights=arm_weights) ?(show_plot=true) () =

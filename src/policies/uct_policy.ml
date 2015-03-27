@@ -1,9 +1,9 @@
 open Mas_core
 open Mas_system
-
+open Mas_value_functions
 open Prob_cache_containers
 
-module Random = Sampling.Random
+module Random = Sampling_ext.Random
 
 module Make(Value_function: Value_function.S) =
 struct
@@ -11,7 +11,7 @@ struct
   module Action = Value_function.Action
 
   let init ?(c=2.0) value_fn (action_provider : State.t -> Action.t array) :
-    (State.t, Action.t) Agents.State_based_policy.t =
+    (State.t, Action.t) State_based_policy.t =
     fun (state:State.t) ->
       let n = Value_function.count value_fn state in
       let actions = action_provider state in

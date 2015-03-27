@@ -1,4 +1,6 @@
+open Mas_core
 open Mas_system
+open Mas_value_functions
 
 
 (** Most reinforcement learning algorithms depend on a state
@@ -11,19 +13,10 @@ module State_transform =
     type ('s, 'a, 'b) t = ('a, 'b) Observation.t -> 's [@@deriving show]
   end
 
-(**
-  A state base policy is a function which given states 
-  of type ['s], it returns actions of type ['a] *)
-module State_based_policy =
- struct
-  type ('s, 'a) t = 's -> 'a [@@deriving show]
- end
-
-
 (** Creates a state based agent with state and action
     types defined by the [Value_function] and 
     [Opp_action] parameters *)
-module Make_state_based (Value_function : Value_function.S)
+module Make (Value_function : Value_function.S)
   (Opp_action:Action.S) =
   struct
     module State = Value_function.State
@@ -50,30 +43,3 @@ module Make_state_based (Value_function : Value_function.S)
       Mas_system.Value_fn.init ~count ~value ~update in
       Agent.init policy' reward_fn' value_fn' name
   end
-
-(*
-  module Make_Q_learner(Value_function : Value_function.S)
-  (Opp_action : Action) =
-    struct
-      module State = Value_function.State
-      module Action = Value_function.Action
-      module Agent = Make_state_based(Value_function)(Opp_action)
-      let default_gamma = 0.9
-      let default_alpha = 0.2
-      let init ?(alpha=default_alpha) ?(gamma=default_gamma)
-        policy state_trans value_fn reward_fn ~name =
-          let agent = Agent.init policy state_trans
-            value_fn reward_fn ~name in agent
-
-      let update2 a s r s' alpha gamma vf a' q_s'_a' =
-        let q_s_a = Value_function.value vf ~action:a s in
-        let q_s_a = q_s_a +. alpha *. (r +. gamma *. q_s'_a' -. q_s_a) in
-        q_s_a
- 
-      let update a s r s' alpha gamma vf actions =
-        let a', q_s'_a' = Value_function.best_action vf s' actions in
-        update2 a s r s' alpha gamma vf a' q_s'_a'
-
-(*        Value_function.set ~action:a s q_s_a vf  *)
-    end
-*)

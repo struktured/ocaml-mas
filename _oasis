@@ -12,40 +12,57 @@ Plugins: META (0.4), DevFiles (0.4)
 Library mas_core
   Path:               src/core
   Pack:               true
-  Modules:            Gen_ext, Sampling, Mas_intf, Action, Mas_system, State, Agents, Reward_functions, Learning_rule, Value_function, Discrete_value_function, Learning_rules
+  Modules:            Gen_ext, Sampling_ext, Mas_intf, Action, Mas_system, State, Reward_functions, Learning_rule
   BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        mas_core
 
+Library mas_value_functions
+  Path:               src/value_functions
+  Pack:               true
+  Modules:            Value_function, Discrete_value_function
+  BuildDepends:       mas_core
+  FindLibName:        mas_value_functions
+
+Library mas_learning_rules
+  Path:               src/learning_rules
+  Pack:               true
+  Modules:            One_step_learner, Q_learner, Sarsa_learner
+  BuildDepends:       mas_core, mas_value_functions
+  FindLibName:        mas_learning_rules
 
 Library mas_policies
   Path:               src/policies
   Pack:               true
-  Modules:            Random_policy, Greedy_policy, Uct_policy
-  BuildDepends:       mas_core
+  Modules:            Random_policy, Greedy_policy, Uct_policy, State_based_policy
+  BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_policies
 
+Library mas_agents
+  Path:               src/agents
+  Pack:               true
+  Modules:            State_based_agent
+  BuildDepends:       mas_core, mas_value_functions, mas_policies, mas_learning_rules
+  FindLibName:        mas_agents
 
 Library mas_environments
   Path:               src/environments
   Pack:               true
   Modules:            Two_agent
-  BuildDepends:       mas_core
+  BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_environments
-
 
 Library mas_plot
   Path:               src/plot
   Pack:               true
   Modules:            Decorators, Archimedes_plot
-  BuildDepends:       mas_core, mas_environments, archimedes
+  BuildDepends:       mas_core, mas_value_functions, mas_environments, mas_agents, archimedes
   FindLibName:        mas_plot
-
 
 Library mas_examples
   Path:               src/examples
   Pack:               true
   Modules:            Narmed_bandit
-  BuildDepends:       mas_core, mas_environments, mas_policies, mas_plot
+  BuildDepends:       mas_core, mas_value_functions, mas_environments, mas_policies, mas_agents, mas_plot, mas_learning_rules
   FindLibName:        mas_examples
 
 
