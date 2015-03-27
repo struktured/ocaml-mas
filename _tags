@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 50c3079325378a8424c72d38abad0c61)
+# DO NOT EDIT (digest: d64a5f78bc00becda976934dd93ea779)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -23,6 +23,7 @@ true: annot, bin_annot
 "src/core/mas_system.cmx": for-pack(Mas_core)
 "src/core/state.cmx": for-pack(Mas_core)
 "src/core/reward_functions.cmx": for-pack(Mas_core)
+"src/core/learning_rule.cmx": for-pack(Mas_core)
 <src/core/*.ml{,i,y}>: pkg_containers
 <src/core/*.ml{,i,y}>: pkg_containers.misc
 <src/core/*.ml{,i,y}>: pkg_gen
@@ -48,6 +49,23 @@ true: annot, bin_annot
 <src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/value_functions/*.ml{,i,y}>: pkg_prob_cache_containers
 <src/value_functions/*.ml{,i,y}>: use_mas_core
+# Library mas_learning_rules
+"src/learning_rules/mas_learning_rules.cmxs": use_mas_learning_rules
+"src/learning_rules/one_step_learner.cmx": for-pack(Mas_learning_rules)
+"src/learning_rules/q_learner.cmx": for-pack(Mas_learning_rules)
+"src/learning_rules/sarsa_learner.cmx": for-pack(Mas_learning_rules)
+<src/learning_rules/*.ml{,i,y}>: pkg_containers
+<src/learning_rules/*.ml{,i,y}>: pkg_containers.misc
+<src/learning_rules/*.ml{,i,y}>: pkg_gen
+<src/learning_rules/*.ml{,i,y}>: pkg_oml
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.iter
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.ord
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.show
+<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
+<src/learning_rules/*.ml{,i,y}>: pkg_prob_cache_containers
+<src/learning_rules/*.ml{,i,y}>: use_mas_core
+<src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_policies
 "src/policies/mas_policies.cmxs": use_mas_policies
 "src/policies/random_policy.cmx": for-pack(Mas_policies)
@@ -65,24 +83,6 @@ true: annot, bin_annot
 <src/policies/*.ml{,i,y}>: pkg_prob_cache_containers
 <src/policies/*.ml{,i,y}>: use_mas_core
 <src/policies/*.ml{,i,y}>: use_mas_value_functions
-# Library mas_learning_rules
-"src/learning_rules/mas_learning_rules.cmxs": use_mas_learning_rules
-"src/learning_rules/learning_rule.cmx": for-pack(Mas_learning_rules)
-"src/learning_rules/q_learner.cmx": for-pack(Mas_learning_rules)
-"src/learning_rules/sarsa_learner.cmx": for-pack(Mas_learning_rules)
-<src/learning_rules/*.ml{,i,y}>: pkg_containers
-<src/learning_rules/*.ml{,i,y}>: pkg_containers.misc
-<src/learning_rules/*.ml{,i,y}>: pkg_gen
-<src/learning_rules/*.ml{,i,y}>: pkg_oml
-<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving
-<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.iter
-<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.ord
-<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving.show
-<src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
-<src/learning_rules/*.ml{,i,y}>: pkg_prob_cache_containers
-<src/learning_rules/*.ml{,i,y}>: use_mas_core
-<src/learning_rules/*.ml{,i,y}>: use_mas_policies
-<src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_agents
 "src/agents/mas_agents.cmxs": use_mas_agents
 "src/agents/state_based_agent.cmx": for-pack(Mas_agents)

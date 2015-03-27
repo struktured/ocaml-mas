@@ -12,16 +12,9 @@ Plugins: META (0.4), DevFiles (0.4)
 Library mas_core
   Path:               src/core
   Pack:               true
-  Modules:            Gen_ext, Sampling, Mas_intf, Action, Mas_system, State, Reward_functions
+  Modules:            Gen_ext, Sampling, Mas_intf, Action, Mas_system, State, Reward_functions, Learning_rule
   BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        mas_core
-
-Library mas_learning_rules
-  Path:               src/learning_rules
-  Pack:               true
-  Modules:            Learning_rule, Q_learner, Sarsa_learner
-  BuildDepends:       mas_core, mas_policies
-  FindLibName:        mas_learning_rules
 
 Library mas_value_functions
   Path:               src/value_functions
@@ -29,6 +22,13 @@ Library mas_value_functions
   Modules:            Value_function, Discrete_value_function
   BuildDepends:       mas_core
   FindLibName:        mas_value_functions
+
+Library mas_learning_rules
+  Path:               src/learning_rules
+  Pack:               true
+  Modules:            One_step_learner, Q_learner, Sarsa_learner
+  BuildDepends:       mas_core, mas_value_functions
+  FindLibName:        mas_learning_rules
 
 Library mas_policies
   Path:               src/policies

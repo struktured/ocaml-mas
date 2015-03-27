@@ -3,6 +3,7 @@ open Mas_system
 open Mas_value_functions
 
 include One_step_learner
+
 module Make(Value_function : Value_function.S) =
 struct
   module State = Value_function.State
