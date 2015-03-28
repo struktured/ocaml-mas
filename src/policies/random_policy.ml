@@ -15,5 +15,5 @@ let init ?(weights:('s -> 'a array -> float array) option) (action_provider : 's
     if num_actions = 0 then failwith("no actions possible for state") else
       let weights = CCOpt.get_lazy (fun () -> fun (_:'s) (actions :'a array) -> actions >>|
                                      fun (_:'a) -> 1.0 /. CCFloat.of_int num_actions) weights in
-      let index = Sampling_ext.from_weights ~rand (weights s actions) in
+      let index = Sampling_ext.from_weights ~rand (weights s actions) () in
       actions.(index)

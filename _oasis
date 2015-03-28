@@ -33,7 +33,7 @@ Library mas_learning_rules
 Library mas_policies
   Path:               src/policies
   Pack:               true
-  Modules:            Random_policy, Greedy_policy, Uct_policy, State_based_policy
+  Modules:            Random_policy, Greedy_policy, Uct_policy, Softmax_policy, State_based_policy
   BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_policies
 

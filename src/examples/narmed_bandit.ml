@@ -31,6 +31,8 @@ struct
 
   module Greedy_policy = Greedy_policy.Make(Value_function)
   module Uct_policy = Uct_policy.Make(Value_function)
+  module Softmax_policy = Softmax_policy.Make(Value_function)
+
   let agent_reward (obs:(BanditAgent.Action.t, Reward.t) Observation.t) = match (obs.action:Reward.t) with r -> r
 
   let state_trans obs = ()
@@ -66,7 +68,8 @@ let arm_weights = Array.of_list [0.1;0.5;1.0]
 let eps = 0.85
 let trials = 150
 let c = 2.0
-type policy = [`Random | `Greedy | `UCT]
+let temp = 1.0
+type policy = [`Random | `Greedy | `UCT | `Softmax]
 type learning_rule = [`Mean_update | `Q_learner]
 module Q_learner = Q_learner.Make(Value_function)
 module Sarsa_learner = Sarsa_learner.Make(Value_function)
@@ -87,7 +90,8 @@ let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weight
   let policy = match policy with 
     | `Random -> Random_policy.init ?weights action_provider
     | `Greedy -> Greedy_policy.init ~eps value_function action_provider
-    | `UCT -> Uct_policy.init ~c value_function action_provider in
+    | `UCT -> Uct_policy.init ~c value_function action_provider 
+    | `Softmax -> Softmax_policy.init ~temp value_function action_provider in
   let env = NArmedBandit.init_with_policy
               ~arm_rewards ~trials policy value_function in
   let plot = if show_plot then Some (Archimedes_plot.init ()) else None in
