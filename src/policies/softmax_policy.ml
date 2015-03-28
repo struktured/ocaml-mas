@@ -1,8 +1,7 @@
 (**
-   The simplest of reinforcement learning policies. The best
-   action is chosen by the agent [epsilon] percent of the time,
-   otherwise a random action is chosen (including the best action).
-*)
+  Softmax policy. Prefer actions of higher value by exponentially
+  weighting them and sampling from the resulting the boltzman distribution.
+ *)
 open Oml
 open Mas_core
 open Mas_system
