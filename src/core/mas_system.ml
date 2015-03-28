@@ -53,7 +53,7 @@ and
   Policy : sig type ('a, 'b) t = ('a, 'b) Observation.t -> 'a [@@deriving show] end =
 struct
   (** A policy function - given an observation, get back an action *)
-  type ('a,'b) t = ('a,'b) Observation.t -> 'a [@@deriving show]
+  type ('a, 'b) t = ('a, 'b) Observation.t -> 'a [@@deriving show]
 end
 
 and

@@ -47,7 +47,7 @@ Library mas_agents
 Library mas_environments
   Path:               src/environments
   Pack:               true
-  Modules:            Two_agent
+  Modules:            Two_agent, Brokerage
   BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_environments
 

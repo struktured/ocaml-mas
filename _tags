@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 292d6045ed3d12beaa2591e260d73f98)
+# DO NOT EDIT (digest: a6ad80fefe73af80b04e7958e0f28258)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -105,6 +105,7 @@ true: annot, bin_annot
 # Library mas_environments
 "src/environments/mas_environments.cmxs": use_mas_environments
 "src/environments/two_agent.cmx": for-pack(Mas_environments)
+"src/environments/brokerage.cmx": for-pack(Mas_environments)
 <src/environments/*.ml{,i,y}>: pkg_containers
 <src/environments/*.ml{,i,y}>: pkg_containers.misc
 <src/environments/*.ml{,i,y}>: pkg_gen
