@@ -3,7 +3,8 @@
 open Mas_core
 open Mas_system
 open Observation
-type who = Agent | Broker [@@deriving show]
+
+type who = Agent of int | Broker | Dealer [@@deriving show]
 
 module Broker_action = struct
   type ('priv, 'pub) t =
@@ -22,18 +23,27 @@ type ('a, 'priv, 'pub) params = {trials:int; init_obs: ('a, 'priv, 'pub) obs}
 type ('a, 'priv, 'pub) state = {
   params:('a, 'priv, 'pub) params; 
   agents:('a, ('priv, 'pub) Broker_action.t) Agent.t array;     
-  broker: (('priv, 'pub) Broker_action.t, 'a) Agent.t; 
+  broker: (('priv, 'pub) Broker_action.t, 'a) Agent.t;
+  dealer: (.. 'a) Agent.t
   obs:('a, 'priv, 'pub) obs; 
-  agent_reward : float; 
+  rewards : float; 
   broker_reward:float } [@@deriving show]
 type ('a, 'priv, 'pub) t = ('a, 'priv, 'pub) state Gen.t
 
-let init ~(params:('a, 'priv, 'pub) params) ~(agents:('a, ('priv, 'pub) Broker_action.t) Agent.t array) 
-  ~(broker:(('priv, 'pub) Broker_action.t, 'a) Agent.t) : ('a, 'priv, 'pub) t =
+type ('a, 'priv, 'pub) turn_chooser = ('a, 'priv, 'pub) state ->
+  ('a, ('priv, 'pub) Broker_action.t) Agent.t
+
+let init ~(params:('a, 'priv, 'pub) params) ~(agents:('a, ('priv, 'pub) Broker_action.t) Agent.t array)
+  ~(broker:(('priv, 'pub) Broker_action.t, 'a) Agent.t) : ('a, 'priv, 'pub)
+  ?turn_chooser t =
+  let turn_chooser =
+    CCOpt.get_lazy (fun () ->
+      let sampler = Sampling.uniform (Array.length agents) in
+      fun _ -> agents.(sampler ())) turn_chooser in
   Gen.(0--(params.trials-1)) |> Gen.scan (fun state epoch ->
     match state.obs with
     | From_broker (obs:('a, ('priv, 'pub) Broker_action.t) Observation.t) ->
-      List.fold_left (fun state agent -> 
+      List.fold_left (fun state agent ->
         let policy = Agent.policy agent in
         let action = policy obs in
         let obs' = {agent;epoch=obs.epoch+1;action} in
