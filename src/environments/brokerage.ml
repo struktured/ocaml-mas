@@ -4,17 +4,17 @@ open Mas_core
 open Mas_system
 open Observation
 
-type who = Agent of int | Broker | Dealer [@@deriving show]
-
-module Broker_action = struct
-  type ('priv, 'pub) t =
-    | Private of 'priv
-    | Public of 'pub [@@deriving show, ord]
+module Who = struct
+  type t = Agent | Broker | Dealer | Broadcaster [@@deriving show]
 end
 
+type ('priv, 'pub) response = Turn | Private of 'priv | Public of 'pub [@@deriving show]
+
 type ('a, 'priv, 'pub) obs =
-  | From_agent of ('a, ('priv, 'pub) Broker_action.t) Observation.t
-  | From_broker of  (('priv, 'pub) Broker_action.t, 'a) Observation.t
+  | From_agent of ('a, ('priv, 'pub) response) Observation.t
+  | From_broker of  ('priv, 'a) Observation.t
+  | From_broadcaster of ('pub, 'priv) Observation.t
+  | From_dealer of ('priv, Who.t) Observation.t
     [@@deriving show]
 
 type ('a, 'priv, 'pub) params = {trials:int; init_obs: ('a, 'priv, 'pub) obs} 
@@ -22,9 +22,9 @@ type ('a, 'priv, 'pub) params = {trials:int; init_obs: ('a, 'priv, 'pub) obs}
 
 type ('a, 'priv, 'pub) state = {
   params:('a, 'priv, 'pub) params; 
-  agents:('a, ('priv, 'pub) Broker_action.t) Agent.t array;     
-  broker: (('priv, 'pub) Broker_action.t, 'a) Agent.t;
-  dealer: (.. 'a) Agent.t
+  agents:('a, ('priv, 'pub) response) Agent.t array;     
+  broker: ('priv, 'a) Agent.t;
+  dealer: ('pub, 'a) Agent.t;
   obs:('a, 'priv, 'pub) obs; 
   rewards : float; 
   broker_reward:float } [@@deriving show]
