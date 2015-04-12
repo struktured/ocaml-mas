@@ -1,0 +1,40 @@
+opam-version: "1.2"
+name: "mas"
+version: "dev"
+author : "Carmelo Piccione carmelo.piccione+mas@gmail.com"
+maintainer: "carmelo.piccione+mas@gmail.com"
+homepage: "https://github.com/struktured/ocaml-mas"
+dev-repo: "git://github.com/struktured/ocaml-mas#master"
+bug-reports: "https://github.com/struktured/ocaml-mas/issues"
+
+build: [
+  ["./configure"]
+  [make "clean"]
+  [make "-j2"]
+]
+
+install: [
+  [make "install"]
+]
+
+remove: [
+ ["ocamlfind" "remove" "mas_examples"]
+ ["ocamlfind" "remove" "mas_plot"]
+ ["ocamlfind" "remove" "mas_environments"]
+ ["ocamlfind" "remove" "mas_agents"]
+ ["ocamlfind" "remove" "mas_value_functions"]
+ ["ocamlfind" "remove" "mas_policies"]
+ ["ocamlfind" "remove" "mas_learning_rules"]
+ ["ocamlfind" "remove" "mas_core"]
+]
+
+depends: [
+  "archimedes"
+  "oml"
+  "ocamlfind"
+  "ppx_deriving" {>= "1.1"}
+  "prob-cache" {>= "1.0"}
+  "containers" 
+  "sequence"
+  "gen"
+]
