@@ -1,0 +1,13 @@
+# OASIS_START
+# DO NOT EDIT (digest: 3887461b4caa3a15b9ede3deee066ebd)
+version = "0.1"
+description = "Multiagent system for OCaml"
+requires =
+"mas_core_async mas_value_functions_async mas_learning_rules_async"
+archive(byte) = "mas_learning_rules_async.cma"
+archive(byte, plugin) = "mas_learning_rules_async.cma"
+archive(native) = "mas_learning_rules_async.cmxa"
+archive(native, plugin) = "mas_learning_rules_async.cmxs"
+exists_if = "mas_learning_rules_async.cma"
+# OASIS_STOP
+

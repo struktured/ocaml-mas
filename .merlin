@@ -10,6 +10,7 @@ PKG sequence
 PKG prob_cache_containers
 PKG archimedes
 PKG oml
+PKG core async
 S src
 S src/core
 S src/policies

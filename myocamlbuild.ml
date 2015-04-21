@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 69cbd1ffe119a220bfe0074c725d8482) *)
+(* DO NOT EDIT (digest: 1f65abb1ed9cbf5675d825217e667763) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -610,11 +610,17 @@ let package_default =
      MyOCamlbuildBase.lib_ocaml =
        [
           ("mas_core", ["src/core"], []);
+          ("mas_core_async", ["src/core/async"], []);
           ("mas_value_functions", ["src/value_functions"], []);
+          ("mas_value_functions_async", ["src/value_functions/async"], []);
           ("mas_learning_rules", ["src/learning_rules"], []);
+          ("mas_learning_rules_async", ["src/learning_rules/async"], []);
           ("mas_policies", ["src/policies"], []);
+          ("mas_policies_async", ["src/policies/async"], []);
           ("mas_agents", ["src/agents"], []);
+          ("mas_agents_async", ["src/agents/async"], []);
           ("mas_environments", ["src/environments"], []);
+          ("mas_environments_async", ["src/environments/async"], []);
           ("mas_plot", ["src/plot"], []);
           ("mas_examples", ["src/examples"], [])
        ];
@@ -622,7 +628,10 @@ let package_default =
      flags = [];
      includes =
        [
+          ("src/value_functions/async", ["src/core/async"]);
           ("src/value_functions", ["src/core"]);
+          ("src/policies/async",
+            ["src/core/async"; "src/value_functions/async"]);
           ("src/policies", ["src/core"; "src/value_functions"]);
           ("src/plot",
             [
@@ -631,6 +640,8 @@ let package_default =
                "src/environments";
                "src/value_functions"
             ]);
+          ("src/learning_rules/async",
+            ["src/core/async"; "src/value_functions/async"]);
           ("src/learning_rules", ["src/core"; "src/value_functions"]);
           ("src/examples",
             [
@@ -642,7 +653,17 @@ let package_default =
                "src/policies";
                "src/value_functions"
             ]);
+          ("src/environments/async",
+            ["src/core/async"; "src/value_functions/async"]);
           ("src/environments", ["src/core"; "src/value_functions"]);
+          ("src/core/async", ["src/core"]);
+          ("src/agents/async",
+            [
+               "src/core/async";
+               "src/learning_rules/async";
+               "src/policies/async";
+               "src/value_functions/async"
+            ]);
           ("src/agents",
             [
                "src/core";
@@ -658,6 +679,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 662 "myocamlbuild.ml"
+# 683 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;

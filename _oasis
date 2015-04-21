@@ -16,12 +16,26 @@ Library mas_core
   BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        mas_core
 
+Library mas_core_async
+  Path:               src/core/async
+  Pack:               true
+  Modules:            Mas_async_system
+  BuildDepends:       mas_core, threads, async
+  FindLibName:        mas_core_async
+
 Library mas_value_functions
   Path:               src/value_functions
   Pack:               true
   Modules:            Value_function, Discrete_value_function
   BuildDepends:       mas_core
   FindLibName:        mas_value_functions
+
+Library mas_value_functions_async
+  Path:               src/value_functions/async
+  Pack:               true
+  Modules:            Async_value_function
+  BuildDepends:       mas_core_async
+  FindLibName:        mas_value_functions_async
 
 Library mas_learning_rules
   Path:               src/learning_rules
@@ -30,12 +44,26 @@ Library mas_learning_rules
   BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_learning_rules
 
+Library mas_learning_rules_async
+  Path:               src/learning_rules/async
+  Pack:               true
+  Modules:            Async_learner
+  BuildDepends:       mas_core_async, mas_value_functions_async, mas_learning_rules_async
+  FindLibName:        mas_learning_rules_async
+
 Library mas_policies
   Path:               src/policies
   Pack:               true
   Modules:            Random_policy, Greedy_policy, Uct_policy, Softmax_policy, State_based_policy
   BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_policies
+
+Library mas_policies_async
+  Path:               src/policies/async
+  Pack:               true
+  Modules:            Async_policy
+  BuildDepends:       mas_core_async, mas_value_functions_async
+  FindLibName:        mas_policies_async
 
 Library mas_agents
   Path:               src/agents
@@ -44,12 +72,26 @@ Library mas_agents
   BuildDepends:       mas_core, mas_value_functions, mas_policies, mas_learning_rules
   FindLibName:        mas_agents
 
+Library mas_agents_async
+  Path:               src/agents/async
+  Pack:               true
+  Modules:            Async_agent
+  BuildDepends:       mas_core_async, mas_value_functions_async, mas_policies_async, mas_learning_rules_async, mas_agents_async
+  FindLibName:        mas_agents_async
+
 Library mas_environments
   Path:               src/environments
   Pack:               true
-  Modules:            Two_agent, Brokerage
+  Modules:            Two_agent
   BuildDepends:       mas_core, mas_value_functions
   FindLibName:        mas_environments
+
+Library mas_environments_async
+  Path:               src/environments/async
+  Pack:               true
+  Modules:            Agent_pipe, Brokerage
+  BuildDepends:       mas_core_async, mas_value_functions_async
+  FindLibName:        mas_environments_async
 
 Library mas_plot
   Path:               src/plot

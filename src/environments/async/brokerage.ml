@@ -4,8 +4,15 @@ open Mas_core
 open Mas_system
 open Observation
 
+
+(* For N agents:
+ * t0: Broadcaster announces initial state 'pub to each agent
+ * t1-N: Each agent reacts by issuing an action to a broker with 'a (or doing nothing) 
+ *       and the broker responds with 'priv
+ * tN+1: Broadcaster annouces next global state of type 'pub agent to agent 
+ *)
 module Who = struct
-  type t = Agent | Broker | Dealer | Broadcaster [@@deriving show]
+  type t = Agent | Broker | Broadcaster [@@deriving show]
 end
 
 type ('priv, 'pub) response = Turn | Private of 'priv | Public of 'pub [@@deriving show]
