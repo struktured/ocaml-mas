@@ -16,6 +16,7 @@ sig
     reward_fn : ('a, 'b) Reward_fn.t;
     value_fn : ('a, 'b) Value_fn.t;
     name:string} [@@deriving show]
+
  
   val policy : ('a, 'b) t -> ('a, 'b) Policy.t
   (** The policy this agent uses to make actions given observations *)

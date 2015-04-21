@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 00ea92965e2ac2b8a5631c0f7a28037f)
+# DO NOT EDIT (digest: b5f36ea06003601f46634e07510ad93b)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -67,6 +67,7 @@ true: annot, bin_annot
 <src/value_functions/*.ml{,i,y}>: use_mas_core
 # Library mas_value_functions_async
 "src/value_functions/async/mas_value_functions_async.cmxs": use_mas_value_functions_async
+"src/value_functions/async/async_value_function.cmx": for-pack(Mas_value_functions_async)
 <src/value_functions/async/*.ml{,i,y}>: pkg_async
 <src/value_functions/async/*.ml{,i,y}>: pkg_containers
 <src/value_functions/async/*.ml{,i,y}>: pkg_containers.misc
@@ -100,6 +101,7 @@ true: annot, bin_annot
 <src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_learning_rules_async
 "src/learning_rules/async/mas_learning_rules_async.cmxs": use_mas_learning_rules_async
+"src/learning_rules/async/async_learner.cmx": for-pack(Mas_learning_rules_async)
 <src/learning_rules/async/*.ml{,i,y}>: pkg_async
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers.misc
@@ -137,6 +139,7 @@ true: annot, bin_annot
 <src/policies/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_policies_async
 "src/policies/async/mas_policies_async.cmxs": use_mas_policies_async
+"src/policies/async/async_policy.cmx": for-pack(Mas_policies_async)
 <src/policies/async/*.ml{,i,y}>: pkg_async
 <src/policies/async/*.ml{,i,y}>: pkg_containers
 <src/policies/async/*.ml{,i,y}>: pkg_containers.misc
@@ -171,6 +174,7 @@ true: annot, bin_annot
 <src/agents/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_agents_async
 "src/agents/async/mas_agents_async.cmxs": use_mas_agents_async
+"src/agents/async/async_agent.cmx": for-pack(Mas_agents_async)
 <src/agents/async/*.ml{,i,y}>: pkg_async
 <src/agents/async/*.ml{,i,y}>: pkg_containers
 <src/agents/async/*.ml{,i,y}>: pkg_containers.misc

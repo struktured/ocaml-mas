@@ -1,9 +1,8 @@
 (** A multiagent environment for many to one agent interactions through a broker agent *)
 
-open Mas_core
-open Mas_system
+open Mas_async_system
+open Mas_core_async
 open Observation
-
 
 (* For N agents:
  * t0: Broadcaster announces initial state 'pub to each agent
@@ -45,8 +44,8 @@ let init ~(params:('a, 'priv, 'pub) params) ~(agents:('a, ('priv, 'pub) Broker_a
   ?turn_chooser t =
   let turn_chooser =
     CCOpt.get_lazy (fun () ->
-      let sampler = Sampling.uniform (Array.length agents) in
-      fun _ -> agents.(sampler ())) turn_chooser in
+      let sampler = Sampling.Poly.uniform agents in
+      fun _ -> sampler () turn_chooser in
   Gen.(0--(params.trials-1)) |> Gen.scan (fun state epoch ->
     match state.obs with
     | From_broker (obs:('a, ('priv, 'pub) Broker_action.t) Observation.t) ->

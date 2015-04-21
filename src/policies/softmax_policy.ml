@@ -22,6 +22,6 @@ struct
       let actions = action_provider state in
       if actions = CCArray.empty then failwith("no actions possible for state: " ^ State.show state) else
       let weights = CCArray.map (fun action -> Value_function.value value_fn ~action state) actions in
-      actions.(Sampling.softmax ~temp weights ())
+      Sampling.Poly.softmax ~temp actions weights ()
 end
 
