@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b5f36ea06003601f46634e07510ad93b)
+# DO NOT EDIT (digest: 8191fb8551d559db138dce028646a6ad)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -211,7 +211,6 @@ true: annot, bin_annot
 # Library mas_environments_async
 "src/environments/async/mas_environments_async.cmxs": use_mas_environments_async
 "src/environments/async/agent_pipe.cmx": for-pack(Mas_environments_async)
-"src/environments/async/brokerage.cmx": for-pack(Mas_environments_async)
 <src/environments/async/*.ml{,i,y}>: pkg_async
 <src/environments/async/*.ml{,i,y}>: pkg_containers
 <src/environments/async/*.ml{,i,y}>: pkg_containers.misc

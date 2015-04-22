@@ -4,20 +4,29 @@ open Mas_core_async
 open Mas_async_system
 
 module Bidirectional = struct
-(*  type ('a, 'b) obs = From_agent of ('a, 'b) Observation.t | To_agent of ('b, 'a) Observation.t [@@deriving show]
-  type ('a, 'b) state = {epoch:int; obs: ('a, 'b) obs}
+type ('a, 'b) obs = 
+  | From_agent of ('b, 'a) Observation.t 
+  | To_agent of ('a,'b) Observation.t (** [@@deriving show] *)
 
-  let init_state state = {epoch=0; obs=From_agent state}*)
-  let create (from_agent:('a, 'b) Agent.t) (to_agent : ('b, 'a) Agent.t) init_obs =
+let create (from_agent:('b, 'a) Agent.t)
+    (to_agent : ('a, 'b) Agent.t) (init_obs:('a,'b) obs) 
+     (*:('a, 'b) Agent.t * ('b, 'a) Agent.t Deferred.t *) =
     let reader1, writer1 = Pipe.create () in
     let reader2, writer2 = Pipe.create () in
     let open Deferred.Monad_infix in
-(*     Pipe.write writer1 init_obs >>= *)
-      let rec read agent r w = Pipe.read r >>|
+    let read_write r w agent : [`Repeat of ('c,'d) Agent.t | `Finished of
+                                  ('d,'c) Agent.t] Deferred.t
+      = Pipe.read r >>|
         function
-          | `Eof -> `Finished init_obs
-          | `Ok obs -> let policy = Agent.policy agent in
-         policy obs; `Repeat obs
-      in () (* Deferred.repeat_until_finished init_obs (read from_agent reader1 writer2)*)
+          | `Eof -> `Finished agent
+          | `Ok obs -> `Repeat agent 
+(*            (let policy = Agent.policy agent in policy obs >>=
+              fun obs' -> Pipe.write w obs' >>| fun () -> `Repeat agent) *)
+    in
+    (match init_obs with
+      | From_agent from_obs -> Pipe.write writer2 from_obs
+      | To_agent to_obs -> Pipe.write writer1 to_obs)
+    (*>>= (fun () -> Deferred.both
+      (Deferred.repeat_until_finished from_agent (read_write reader1 writer2))
+      (Deferred.repeat_until_finished to_agent (read_write reader2 writer1))) *)
 end
-

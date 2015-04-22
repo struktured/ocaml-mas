@@ -89,7 +89,7 @@ Library mas_environments
 Library mas_environments_async
   Path:               src/environments/async
   Pack:               true
-  Modules:            Agent_pipe, Brokerage
+  Modules:            Agent_pipe
   BuildDepends:       mas_core_async, mas_value_functions_async
   FindLibName:        mas_environments_async
 

@@ -81,7 +81,7 @@ let go ?(policy=`Greedy) ?(learning_rule=`Mean_update) ?(eps=eps) ?(c=c) ?weight
     CCArray.foldi (fun (w, k) i w' ->
       if w' > w then (w', k+1) else (w, k)) (0.0, 0) arm_weights in
   let num_arms = CCArray.length arm_rewards in
-  let action_provider _ = CCArray.(0--(num_arms-1)) in
+  let action_provider (_:State.t) : Arm.t array = CCArray.(0--(num_arms-1)) in
   let learning_rule = match learning_rule with
     | `Mean_update -> None
     | `Sarsa_learner -> Some (Sarsa_learner.init action_provider)
