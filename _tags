@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8191fb8551d559db138dce028646a6ad)
+# DO NOT EDIT (digest: cab432b478169d5d3ce3b7656802ec46)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -116,7 +116,8 @@ true: annot, bin_annot
 <src/learning_rules/async/*.ml{,i,y}>: pkg_threads
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_core
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_core_async
-<src/learning_rules/async/*.ml{,i,y}>: use_mas_learning_rules_async
+<src/learning_rules/async/*.ml{,i,y}>: use_mas_learning_rules
+<src/learning_rules/async/*.ml{,i,y}>: use_mas_value_functions
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_value_functions_async
 # Library mas_policies
 "src/policies/mas_policies.cmxs": use_mas_policies
@@ -187,11 +188,14 @@ true: annot, bin_annot
 <src/agents/async/*.ml{,i,y}>: pkg_ppx_deriving_protobuf
 <src/agents/async/*.ml{,i,y}>: pkg_prob_cache_containers
 <src/agents/async/*.ml{,i,y}>: pkg_threads
-<src/agents/async/*.ml{,i,y}>: use_mas_agents_async
+<src/agents/async/*.ml{,i,y}>: use_mas_agents
 <src/agents/async/*.ml{,i,y}>: use_mas_core
 <src/agents/async/*.ml{,i,y}>: use_mas_core_async
+<src/agents/async/*.ml{,i,y}>: use_mas_learning_rules
 <src/agents/async/*.ml{,i,y}>: use_mas_learning_rules_async
+<src/agents/async/*.ml{,i,y}>: use_mas_policies
 <src/agents/async/*.ml{,i,y}>: use_mas_policies_async
+<src/agents/async/*.ml{,i,y}>: use_mas_value_functions
 <src/agents/async/*.ml{,i,y}>: use_mas_value_functions_async
 # Library mas_environments
 "src/environments/mas_environments.cmxs": use_mas_environments
