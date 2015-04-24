@@ -18,16 +18,31 @@ module type S =
       ?learning_rule:unary_learning_rule -> string -> t
   end
 
-(** Creates a discrete state value function- it maps discrete state and actions with
-    reward estimates by caching them explicitly. These are also typically classified
-    as tabular methods in the reinforcement learning literature. *)
-module Make(State:State.S) (Action:Action.S) :
-  S with module State = State and module Action = Action =
+
+module StateAction = struct
+  module type S =
+    sig
+      module State : State.S
+      module Action : Action.S
+      type t = State of State.t | Action of Action.t [@@deriving show, ord]
+    end
+  module Make(State:State.S)(Action:Action.S) : 
+      S with module State = State and module Action = Action = 
+    struct
+      module State = State
+      module Action = Action
+      type t = State of State.t | Action of Action.t [@@deriving show, ord]
+    end
+end
+
+
+module Make_with_cache (StateAction : StateAction.S) (Cache:
+  Prob_cache_containers.Model_intf.S with module Event := StateAction) :
+  S with module State = StateAction.State and module Action = StateAction.Action =
 struct
-  include Value_function.Make(State)(Action)
-  module StateAction = struct type t =
-    State of State.t | Action of Action.t [@@deriving show, ord] end
-  module Cache = Prob_cache_containers.Set_model.Make(StateAction)
+  include Value_function.Make(StateAction.State)(StateAction.Action)
+  
+  module StateAction = StateAction
 
   type update_rule = StateAction.t Prob_cache_common.Update_rules.Update_fn.t
 
@@ -88,3 +103,11 @@ struct
       ~name
 
 end
+
+(** Creates a discrete state value function- it maps discrete state and actions with
+    reward estimates by caching them explicitly. These are also typically classified
+    as tabular methods in the reinforcement learning literature. *)
+module Make(StateAction:StateAction.S) = Make_with_cache 
+ (StateAction) (Prob_cache_containers.Set_model.Make(StateAction))
+
+
