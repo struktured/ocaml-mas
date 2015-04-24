@@ -1,7 +1,7 @@
 open Core.Std
 open Async.Std
 open Mas_core_async
-open Mas_async_system
+open Mas_system_async
 
 module type S = sig
 
