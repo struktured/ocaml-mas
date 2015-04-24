@@ -1,5 +1,6 @@
 open Core.Std
 open Async.Std
+open Mas_core
 module Reward = Mas_intf.Reward
 module Deferred = Async_kernel.Deferred
 module Result = Async_kernel.Deferred.Result
