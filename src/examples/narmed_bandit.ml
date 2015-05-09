@@ -25,7 +25,8 @@ struct
   type opponent = (Reward.t, Arm.t) Agent.t [@@deriving show]
   type agent = (Arm.t, Reward.t) Agent.t [@@deriving show]
   type params = (Arm.t, Reward.t) Env.params
-  module Value_function = Discrete_value_function.Make(State)(Arm)
+  module StateAction = Discrete_value_function.StateAction.Make(State)(Arm)
+  module Value_function = Discrete_value_function.Make(StateAction)
 
   module BanditAgent = State_based_agent.Make(Value_function)(Reward)
 

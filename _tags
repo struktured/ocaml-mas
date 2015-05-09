@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: cab432b478169d5d3ce3b7656802ec46)
+# DO NOT EDIT (digest: f91a0311503745385d3b755aade346d2)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -36,7 +36,7 @@ true: annot, bin_annot
 <src/core/*.ml{,i,y}>: pkg_prob_cache_containers
 # Library mas_core_async
 "src/core/async/mas_core_async.cmxs": use_mas_core_async
-"src/core/async/mas_async_system.cmx": for-pack(Mas_core_async)
+"src/core/async/mas_system_async.cmx": for-pack(Mas_core_async)
 <src/core/async/*.ml{,i,y}>: pkg_async
 <src/core/async/*.ml{,i,y}>: pkg_containers
 <src/core/async/*.ml{,i,y}>: pkg_containers.misc
@@ -67,7 +67,7 @@ true: annot, bin_annot
 <src/value_functions/*.ml{,i,y}>: use_mas_core
 # Library mas_value_functions_async
 "src/value_functions/async/mas_value_functions_async.cmxs": use_mas_value_functions_async
-"src/value_functions/async/async_value_function.cmx": for-pack(Mas_value_functions_async)
+"src/value_functions/async/value_function_async.cmx": for-pack(Mas_value_functions_async)
 <src/value_functions/async/*.ml{,i,y}>: pkg_async
 <src/value_functions/async/*.ml{,i,y}>: pkg_containers
 <src/value_functions/async/*.ml{,i,y}>: pkg_containers.misc
@@ -82,6 +82,7 @@ true: annot, bin_annot
 <src/value_functions/async/*.ml{,i,y}>: pkg_threads
 <src/value_functions/async/*.ml{,i,y}>: use_mas_core
 <src/value_functions/async/*.ml{,i,y}>: use_mas_core_async
+<src/value_functions/async/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_learning_rules
 "src/learning_rules/mas_learning_rules.cmxs": use_mas_learning_rules
 "src/learning_rules/one_step_learner.cmx": for-pack(Mas_learning_rules)
@@ -101,7 +102,7 @@ true: annot, bin_annot
 <src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_learning_rules_async
 "src/learning_rules/async/mas_learning_rules_async.cmxs": use_mas_learning_rules_async
-"src/learning_rules/async/async_learner.cmx": for-pack(Mas_learning_rules_async)
+"src/learning_rules/async/Learning_rules_async.cmx": for-pack(Mas_learning_rules_async)
 <src/learning_rules/async/*.ml{,i,y}>: pkg_async
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers.misc
@@ -118,7 +119,6 @@ true: annot, bin_annot
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_core_async
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_learning_rules
 <src/learning_rules/async/*.ml{,i,y}>: use_mas_value_functions
-<src/learning_rules/async/*.ml{,i,y}>: use_mas_value_functions_async
 # Library mas_policies
 "src/policies/mas_policies.cmxs": use_mas_policies
 "src/policies/random_policy.cmx": for-pack(Mas_policies)
@@ -155,6 +155,7 @@ true: annot, bin_annot
 <src/policies/async/*.ml{,i,y}>: pkg_threads
 <src/policies/async/*.ml{,i,y}>: use_mas_core
 <src/policies/async/*.ml{,i,y}>: use_mas_core_async
+<src/policies/async/*.ml{,i,y}>: use_mas_value_functions
 <src/policies/async/*.ml{,i,y}>: use_mas_value_functions_async
 # Library mas_agents
 "src/agents/mas_agents.cmxs": use_mas_agents
@@ -175,7 +176,7 @@ true: annot, bin_annot
 <src/agents/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_agents_async
 "src/agents/async/mas_agents_async.cmxs": use_mas_agents_async
-"src/agents/async/async_agent.cmx": for-pack(Mas_agents_async)
+"src/agents/async/agent_async.cmx": for-pack(Mas_agents_async)
 <src/agents/async/*.ml{,i,y}>: pkg_async
 <src/agents/async/*.ml{,i,y}>: pkg_containers
 <src/agents/async/*.ml{,i,y}>: pkg_containers.misc
@@ -229,6 +230,7 @@ true: annot, bin_annot
 <src/environments/async/*.ml{,i,y}>: pkg_threads
 <src/environments/async/*.ml{,i,y}>: use_mas_core
 <src/environments/async/*.ml{,i,y}>: use_mas_core_async
+<src/environments/async/*.ml{,i,y}>: use_mas_value_functions
 <src/environments/async/*.ml{,i,y}>: use_mas_value_functions_async
 # Library mas_plot
 "src/plot/mas_plot.cmxs": use_mas_plot

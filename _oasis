@@ -19,7 +19,7 @@ Library mas_core
 Library mas_core_async
   Path:               src/core/async
   Pack:               true
-  Modules:            Mas_system_async, Learning_rule_async
+  Modules:            Mas_system_async
   BuildDepends:       mas_core, threads, async
   FindLibName:        mas_core_async
 
@@ -34,7 +34,7 @@ Library mas_value_functions_async
   Path:               src/value_functions/async
   Pack:               true
   Modules:            Value_function_async
-  BuildDepends:       mas_core_async, mas_value_function
+  BuildDepends:       mas_core_async, mas_value_functions
   FindLibName:        mas_value_functions_async
 
 Library mas_learning_rules
@@ -47,8 +47,8 @@ Library mas_learning_rules
 Library mas_learning_rules_async
   Path:               src/learning_rules/async
   Pack:               true
-  Modules:            learnings_rules_async
-  BuildDepends:       mas_core_async, mas_value_functions_async, mas_learning_rules
+  Modules:            Learning_rules_async
+  BuildDepends:       mas_core_async, mas_learning_rules
   FindLibName:        mas_learning_rules_async
 
 Library mas_policies

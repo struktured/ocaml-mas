@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: e6b13c93818b8e1a8a0abd41bac0355f) *)
+(* DO NOT EDIT (digest: 8bb508a1007cd8384e1eebf42f56a735) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -628,7 +628,8 @@ let package_default =
      flags = [];
      includes =
        [
-          ("src/value_functions/async", ["src/core/async"]);
+          ("src/value_functions/async",
+            ["src/core/async"; "src/value_functions"]);
           ("src/value_functions", ["src/core"]);
           ("src/policies/async",
             ["src/core/async"; "src/value_functions/async"]);
@@ -641,11 +642,7 @@ let package_default =
                "src/value_functions"
             ]);
           ("src/learning_rules/async",
-            [
-               "src/core/async";
-               "src/learning_rules";
-               "src/value_functions/async"
-            ]);
+            ["src/core/async"; "src/learning_rules"]);
           ("src/learning_rules", ["src/core"; "src/value_functions"]);
           ("src/examples",
             [
@@ -684,6 +681,6 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 688 "myocamlbuild.ml"
+# 685 "myocamlbuild.ml"
 (* OASIS_STOP *)
 Ocamlbuild_plugin.dispatch dispatch_default;;
