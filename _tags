@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f91a0311503745385d3b755aade346d2)
+# DO NOT EDIT (digest: 9bb6d2c65e694acc4a850f5385cdc72a)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -102,7 +102,7 @@ true: annot, bin_annot
 <src/learning_rules/*.ml{,i,y}>: use_mas_value_functions
 # Library mas_learning_rules_async
 "src/learning_rules/async/mas_learning_rules_async.cmxs": use_mas_learning_rules_async
-"src/learning_rules/async/Learning_rules_async.cmx": for-pack(Mas_learning_rules_async)
+"src/learning_rules/async/learning_rules_async.cmx": for-pack(Mas_learning_rules_async)
 <src/learning_rules/async/*.ml{,i,y}>: pkg_async
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers.misc
