@@ -26,7 +26,15 @@ remove: [
  ["ocamlfind" "remove" "mas_policies"]
  ["ocamlfind" "remove" "mas_learning_rules"]
  ["ocamlfind" "remove" "mas_core"]
+ ["ocamlfind" "remove" "mas_plot_async"]
+ ["ocamlfind" "remove" "mas_environments_async"]
+ ["ocamlfind" "remove" "mas_agents_async"]
+ ["ocamlfind" "remove" "mas_value_functions_async"]
+ ["ocamlfind" "remove" "mas_policies_async"]
+ ["ocamlfind" "remove" "mas_learning_rules_async"]
+ ["ocamlfind" "remove" "mas_core_async"]
 ]
+
 
 depends: [
   "archimedes"
@@ -38,3 +46,6 @@ depends: [
   "sequence"
   "gen"
 ]
+
+
+depopts: [ "async" "riakc_ppx"]
