@@ -1,20 +1,21 @@
 open Core.Std
 open Async.Std
 open Mas_core_async
+module Mas_system_async = Mas_system_async.Make(Deferred)
 open Mas_system_async
 
 module Pipe = struct
 module type S = sig
 
 type ('a, 'b) pipe = {
-  reader1 : ('a, 'b) Observation.t Pipe.Reader.t;
-  writer1 : ('a, 'b) Observation.t Pipe.Writer.t;
-  reader2 : ('b, 'a) Observation.t Pipe.Reader.t;
-  writer2 : ('b, 'a) Observation.t Pipe.Writer.t}
+  reader1 : 'a Observation.t Pipe.Reader.t;
+  writer1 : 'a Observation.t Pipe.Writer.t;
+  reader2 : 'b Observation.t Pipe.Reader.t;
+  writer2 : 'b Observation.t Pipe.Writer.t}
 
 type ('a, 'b) obs =
-  | From_agent of ('b, 'a) Observation.t
-  | From_opponent of ('a, 'b) Observation.t  (* [@@deriving show] *)
+  | From_agent of 'b Observation.t
+  | From_opponent of 'a Observation.t  (* [@@deriving show] *)
 type ('a, 'b) t = {pipe:('a, 'b) pipe; agent: ('a, 'b) Agent.t; opponent: ('b, 'a) Agent.t}
 
 val create : ('a, 'b) Agent.t -> ('b, 'a) Agent.t ->
@@ -28,14 +29,14 @@ end
 module Bidirectional : S = struct
 
 type ('a, 'b) pipe = {
-  reader1 : ('a, 'b) Observation.t Pipe.Reader.t;
-  writer1 : ('a, 'b) Observation.t Pipe.Writer.t;
-  reader2 : ('b, 'a) Observation.t Pipe.Reader.t;
-  writer2 : ('b, 'a) Observation.t Pipe.Writer.t}
+  reader1 : 'a Observation.t Pipe.Reader.t;
+  writer1 : 'a Observation.t Pipe.Writer.t;
+  reader2 : 'b Observation.t Pipe.Reader.t;
+  writer2 : 'b Observation.t Pipe.Writer.t}
 
 type ('a, 'b) obs =
-  | From_agent of ('b, 'a) Observation.t
-  | From_opponent of ('a, 'b) Observation.t  (* [@@deriving show] *)
+  | From_agent of 'b Observation.t
+  | From_opponent of 'a Observation.t  (* [@@deriving show] *)
 
 type ('a, 'b) t = {pipe:('a,'b) pipe; agent: ('a, 'b) Agent.t; opponent: ('b,'a) Agent.t}
 
@@ -46,7 +47,7 @@ let read_write r w agent =
           | `Eof -> Deferred.return(`Finished agent)
           | `Ok obs ->
             (let policy = Agent.policy agent in policy obs >>=
-             fun action -> Pipe.write w Observation.{agent;action;epoch=obs.epoch+1} >>|
+             fun action -> Pipe.write w action >>|
              fun () -> `Repeat agent)
 
 let create (from_agent:('a, 'b) Agent.t)
@@ -75,49 +76,48 @@ module Monad =
 module type S = 
 sig
   
-  type ('a, 'b) t =  ('a, 'b) Observation.t Deferred.t
-  val map : ('a, 'b) t -> (('a, 'b) Observation.t -> ('a, 'b) Agent.t) -> ('b, 'a) t
-  val bind : ('a, 'b) t -> (('a, 'b) Observation.t -> ('a, 'b) Agent.t Deferred.t) -> ('b, 'a) t
-  val bind_always : ('a, 'b) Agent.t Deferred.t -> (('a, 'b) Observation.t -> ('a,'b) Agent.t Deferred.t)
-  val map_always : ('a, 'b) Agent.t -> (('a, 'b) Observation.t -> ('a,'b) Agent.t Deferred.t)
-  val return : ('a, 'b) Observation.t -> ('a, 'b) t
-  val create : ?epoch:int -> 'a -> ('a,'b) Agent.t -> ('b, 'a) t
+  type 'a t =  'a Observation.t Deferred.t
+  val map : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
+  val bind : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t Deferred.t) -> 'b t
+  val bind_always : ('a, 'b) Agent.t Deferred.t -> ('a Observation.t -> ('a,'b) Agent.t Deferred.t)
+  val map_always : ('a, 'b) Agent.t -> ('a Observation.t -> ('a, 'b) Agent.t Deferred.t)
+  val return : 'a Observation.t -> 'a t
   
-  val (>>=) : ('a, 'b) t -> (('a, 'b) Observation.t ->
-    ('a, 'b) Agent.t Deferred.t) -> ('b, 'a) t
-  val (>>|) : ('a, 'b) t -> (('a, 'b) Observation.t -> ('a, 'b) Agent.t) -> ('b, 'a) t
-  val (>|=) : ('a, 'b) t -> (('a, 'b) Observation.t -> ('a, 'b) Agent.t) -> ('b, 'a) t
-  val (=>>) : ('a, 'b) t -> ('a, 'b) Agent.t Deferred.t -> ('b, 'a) t
-  val (|>>) : ('a, 'b) t -> ('a, 'b) Agent.t -> ('b, 'a) t
+  val (>>=) : 'a t -> ('a Observation.t ->
+    ('a, 'b) Agent.t Deferred.t) -> 'b t
+  val (>>|) : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
+  val (>|=) : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
+  val (=>>) : 'a t -> ('a, 'b) Agent.t Deferred.t -> 'b t
+  val (|>>) : 'a t -> ('a, 'b) Agent.t -> 'b t
 
-  val forever : ('a, 'b) Observation.t ->
-    (('a, 'b) Observation.t -> ('a, 'b) t) -> unit
+  val forever : 'a Observation.t ->
+    ('a Observation.t -> 'a t) -> unit
 
-  val repeat_until_finished: ('a, 'b) Observation.t ->
-    (('a, 'b) Mas_core_async.Mas_system_async.Observation.t ->
+  val repeat_until_finished: 'a Observation.t ->
+    ('a Observation.t ->
       [ `Finished of 'c
-      | `Repeat of ('a, 'b) Observation.t]
+      | `Repeat of 'a Observation.t]
       Deferred.t) -> 'c Deferred.t
 
-  val ignore : ('a, 'b) t -> unit Deferred.t
+  val ignore : 'a t -> unit Deferred.t
 
   end
 
   module Deferred : S = struct
-    type ('a, 'b) t =  ('a, 'b) Observation.t Deferred.t
+    type 'a t =  'a Observation.t Deferred.t
 
     let return = Deferred.return
 
-    let create ?(epoch=0) action agent = return Observation.{epoch;action;agent}
+    let bind t f = t >>=
+      fun obs -> f obs >>= 
+      fun agent -> Agent.policy agent obs >>=
+      fun action -> Agent.reward_function agent obs >>=
+      fun reward -> Agent.value_function agent |> 
+      fun value_function -> Deferred.ignore @@ 
+        Value_function.update value_function ~action obs reward >>|
+        fun () -> action
 
-    let bind (t:('a, 'b) t) f = t >>=
-      fun obs -> f obs >>= fun agent -> Agent.policy agent obs >>|
-      fun action -> Observation.{agent;action;epoch=obs.epoch+1}
-
-    let map (t:('a, 'b) t) f = t >>=
-      fun obs -> let agent = f obs in Agent.policy agent obs >>|
-      fun action -> Observation.{agent;action;epoch=obs.epoch+1}
-
+    let map t f = bind t @@ fun obs -> return @@ f obs
     let bind_always agent = fun _ -> agent
     let map_always agent = fun _ -> Deferred.return agent
 
@@ -128,7 +128,7 @@ sig
     let (=>>) t agent = t >>= bind_always agent
     let (|>>) t agent = t >>= map_always agent
 
-     let forever init_obs (f:(('b,'a) Observation.t -> ('b, 'a) t)) =
+     let forever init_obs f =
        Deferred.forever init_obs f
 
      let repeat_until_finished init_obs f =
