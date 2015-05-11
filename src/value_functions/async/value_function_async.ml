@@ -1,11 +1,15 @@
 open Mas_core
 open Mas_core_async
+open Core.Std
+open Async.Std
+module Mas_system_async = Mas_system_async.Make(Deferred)
 open Mas_system_async
+
 
 module type S = 
 sig
-  module State : State.S
-  module Action : Action.S
+  module State : Mas_core.State.S
+  module Action : Mas_core.Action.S
 
   module Learning_rule :
     Learning_rule.S with module State = State and module Action = Action
@@ -30,7 +34,7 @@ sig
     name : string -> t
 end
 
-module Make (State:State.S) (Action : Action.S) :
+module Make (State:State.S) (Action : Mas_core.Action.S) :
   S_with_init with module State = State and module Action = Action =
 struct
   module State = State
