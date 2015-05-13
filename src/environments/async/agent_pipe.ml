@@ -99,7 +99,7 @@ sig
       | `Repeat of 'a Observation.t * 'b]
       Deferred.t) -> 'b Deferred.t
 
-  val scan_while : 'a t -> 'b ->
+  val scan_while : 'a Observation.t -> 'b ->
     ('a Observation.t -> 'b ->
       [ `Finished of 'b
       | `Repeat of 'a Observation.t * 'b]
@@ -144,7 +144,19 @@ sig
        let open Deferred.Monad_infix in
        Deferred.repeat_until_finished (init_obs, state) _f
 
-    let scan_while f state _ = failwith("nyi")
+    let scan_while init_obs state f =
+       let open Deferred.Monad_infix in
+       let obs_ref, state_ref = ref init_obs, ref state in
+       let stop = ref false in
+       fun () ->
+          if (!stop) then failwith("no more elements to scan") else
+          let obs, state = !obs_ref, !state_ref in
+          f obs state >>| fun next -> match next with
+            | `Finished state' ->
+                begin state_ref := state'; stop := true; next end
+            | `Repeat (obs', state') ->
+                begin obs_ref := obs'; state_ref := state'; next end
+
 (*
     let fold ?(epoch=0) action agent init f =
        Deferred.repeat_until_finished Observation.{action;agent;epoch} f
