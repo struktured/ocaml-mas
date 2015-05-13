@@ -80,43 +80,43 @@ and
       (** The type of a value function, composing of a [value], [count],
           and [update] function. *)
       type ('a, 'b) t = private {
-        value : ?action:'a -> 'a Observation.t -> Reward.t Deferred.t;
-        count : ?action:'a -> 'a Observation.t -> int Deferred.t;
-        update : ('a, 'b) t -> action:'a -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t
+        value : ?action:'b Action.t -> 'a Observation.t -> Reward.t Deferred.t;
+        count : ?action:'b Action.t -> 'a Observation.t -> int Deferred.t;
+        update : ('a, 'b) t -> action:'b Action.t -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t
       } [@@deriving show]
   
-      val value : ('a, 'b) t -> ?action: 'a -> 'a Observation.t
+      val value : ('a, 'b) t -> ?action: 'b Action.t -> 'a Observation.t
         -> Reward.t Deferred.t
       (** Gets the value estimator for this value function instance.
           The returned function estimates the reward signal given
           the observation and an optional action. *)
 
-      val count : ('a, 'b) t -> ?action: 'a -> 'a Observation.t -> int Deferred.t
+      val count : ('a, 'b) t -> ?action: 'b Action.t -> 'a Observation.t -> int Deferred.t
       (** Gets the visitor count function for this value function instance.
           The returned function counts the number of the times the
           given observation and an optional [action] have been
           visited or attempted by the agent *)
 
 
-      val update : ('a, 'b) t -> action : 'a -> 'a Observation.t
+      val update : ('a, 'b) t -> action : 'b Action.t -> 'a Observation.t
         -> Reward.t -> ('a, 'b) t Deferred.t
       (** Updates a value function instance. Given an action,
           new observation, and reward signal, update the underlying
           model of the value function *)
 
       val init : 
-        value:(?action:'a -> 'a Observation.t -> Reward.t Deferred.t) -> 
-        count:(?action:'a -> 'a Observation.t -> int Deferred.t) ->
-        update:(('a, 'b) t -> action:'a -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t) ->
+        value:(?action:'b Action.t -> 'a Observation.t -> Reward.t Deferred.t) -> 
+        count:(?action:'b Action.t -> 'a Observation.t -> int Deferred.t) ->
+        update:(('a, 'b) t -> action:'b Action.t -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t) ->
         ('a, 'b) t
       (** Initializes a new value function given a [value] estimator,
           visitor [count] function, and an value [update] function *)
     end =
   struct
   type ('a, 'b) t = {
-    value : ?action:'a -> 'a Observation.t -> Reward.t Deferred.t;
-    count : ?action:'a -> 'a Observation.t -> int Deferred.t;
-    update : ('a, 'b) t -> action:'a -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t
+    value : ?action:'b Action.t -> 'a Observation.t -> Reward.t Deferred.t;
+    count : ?action:'b Action.t -> 'a Observation.t -> int Deferred.t;
+    update : ('a, 'b) t -> action:'b Action.t -> 'a Observation.t -> Reward.t -> ('a, 'b) t Deferred.t
   } [@@deriving show]
   
   let init ~value ~count ~update =

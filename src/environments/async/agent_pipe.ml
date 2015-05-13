@@ -57,7 +57,7 @@ let create (from_agent:('a, 'b) Agent.t)
   {pipe;agent=from_agent;opponent=from_opp}
 
 let start t init_obs = 
-    let open Deferred.Monad_infix in 
+    let open Deferred.Monad_infix in
     (match init_obs with
       | From_agent from_agent -> Pipe.write t.pipe.writer2 from_agent
       | From_opponent from_opp-> Pipe.write t.pipe.writer1 from_opp)
@@ -73,31 +73,39 @@ end
 
 module Monad =
   struct
-module type S = 
+module type S =
 sig
-  
+
   type 'a t =  'a Observation.t Deferred.t
-  val map : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
-  val bind : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t Deferred.t) -> 'b t
-  val bind_always : ('a, 'b) Agent.t Deferred.t -> ('a Observation.t -> ('a,'b) Agent.t Deferred.t)
-  val map_always : ('a, 'b) Agent.t -> ('a Observation.t -> ('a, 'b) Agent.t Deferred.t)
+  val map : 'a t -> ('a Observation.t -> 'b Observation.t) -> 'b t
+  val bind : 'a t -> ('a Observation.t -> 'b t) -> 'b t
   val return : 'a Observation.t -> 'a t
-  
-  val (>>=) : 'a t -> ('a Observation.t ->
-    ('a, 'b) Agent.t Deferred.t) -> 'b t
-  val (>>|) : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
-  val (>|=) : 'a t -> ('a Observation.t -> ('a, 'b) Agent.t) -> 'b t
+
+  val bind_agent : 'a t -> ('a, 'b) Agent.t Deferred.t -> 'b t
+  val map_agent : 'a t -> ('a, 'b) Agent.t -> 'b t
+
+  val (>>=) : 'a t -> ('a Observation.t -> 'b t) -> 'b t
+  val (>>|) : 'a t -> ('a Observation.t -> 'b Observation.t) -> 'b t
+  val (>|=) : 'a t -> ('a Observation.t -> 'b Observation.t) -> 'b t
   val (=>>) : 'a t -> ('a, 'b) Agent.t Deferred.t -> 'b t
   val (|>>) : 'a t -> ('a, 'b) Agent.t -> 'b t
 
   val forever : 'a Observation.t ->
     ('a Observation.t -> 'a t) -> unit
 
-  val repeat_until_finished: 'a Observation.t ->
-    ('a Observation.t ->
-      [ `Finished of 'c
-      | `Repeat of 'a Observation.t]
-      Deferred.t) -> 'c Deferred.t
+  val fold_while : 'a Observation.t -> 'b ->
+    ('a Observation.t -> 'b ->
+      [ `Finished of 'b
+      | `Repeat of 'a Observation.t * 'b]
+      Deferred.t) -> 'b Deferred.t
+
+  val scan_while : 'a t -> 'b ->
+    ('a Observation.t -> 'b ->
+      [ `Finished of 'b
+      | `Repeat of 'a Observation.t * 'b]
+      Deferred.t) -> unit ->
+      [ `Finished of 'b
+      | `Repeat of 'a Observation.t * 'b] Deferred.t
 
   val ignore : 'a t -> unit Deferred.t
 
@@ -107,32 +115,36 @@ sig
     type 'a t =  'a Observation.t Deferred.t
 
     let return = Deferred.return
+    let map t f = Deferred.map t ~f
+    let bind t f = Deferred.bind t f
 
-    let bind t f = t >>=
-      fun obs -> f obs >>= 
+    let bind_agent (t:'a t) (agent:('a, 'b) Agent.t Deferred.t) : 'b t = t >>=
+      fun obs -> agent >>=
       fun agent -> Agent.policy agent obs >>=
       fun action -> Agent.reward_function agent obs >>=
-      fun reward -> Agent.value_function agent |> 
-      fun value_function -> Deferred.ignore @@ 
+      fun reward -> Agent.value_function agent |>
+      fun value_function -> Deferred.ignore @@
         Value_function.update value_function ~action obs reward >>|
         fun () -> action
 
-    let map t f = bind t @@ fun obs -> return @@ f obs
-    let bind_always agent = fun _ -> agent
-    let map_always agent = fun _ -> Deferred.return agent
+    let map_agent t agent = bind_agent t @@ Deferred.return agent
 
     let (>>=) = bind
     let (>>|) = map
     let (>|=) = map
 
-    let (=>>) t agent = t >>= bind_always agent
-    let (|>>) t agent = t >>= map_always agent
+    let (=>>) t agent = bind_agent t agent
+    let (|>>) t agent = map_agent t agent
 
      let forever init_obs f =
        Deferred.forever init_obs f
 
-     let repeat_until_finished init_obs f =
-       Deferred.repeat_until_finished init_obs f
+    let fold_while init_obs state f =
+       let _f ((obs:'a Observation.t), state:'b) = f obs state in
+       let open Deferred.Monad_infix in
+       Deferred.repeat_until_finished (init_obs, state) _f
+
+    let scan_while f state _ = failwith("nyi")
 (*
     let fold ?(epoch=0) action agent init f =
        Deferred.repeat_until_finished Observation.{action;agent;epoch} f
@@ -153,15 +165,24 @@ sig
   module Testing = struct
     open Deferred
     let test_3_agents_forever action agent1 agent2 agent3 =
-      forever Observation.{epoch=0;action;agent=agent1} @@ fun obs ->
-       return obs |>> agent2 |>> agent3
+        forever action @@ fun obs ->
+       return obs |>> agent1 |>> agent2 |>> agent3
+
+    let test_3_agents_fold_while ?(trials=100) action agent1 agent2 agent3 =
+      let epoch = 0 in
+      fold_while action epoch @@ fun obs epoch ->
+        return obs |>> agent1 |>> agent2 |>> agent3 >>|
+          fun obs' -> if epoch > trials then
+            `Finished epoch else `Repeat (obs', epoch+1)
+
+       (*
     let test_3_agents_repeat_until_finished ?(last_epoch=1000) 
       action agent1 agent2 agent3 =
         repeat_until_finished Observation.{action;agent=agent1;epoch=0} @@ 
         fun obs -> Async.Std.Deferred.return @@
           if obs.Observation.epoch >= last_epoch then `Finished obs else
           (*return obs |>> agent2 |>> agent3 *) `Repeat obs
-
+*)
   end
 
 end
