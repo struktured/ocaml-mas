@@ -42,10 +42,10 @@ depends: [
   "ocamlfind"
   "ppx_deriving" {>= "1.1"}
   "prob-cache" {>= "1.0"}
-  "containers" 
+  "containers"
   "sequence"
   "gen"
 ]
 
 
-depopts: [ "async" "riakc_ppx"]
+depopts: [ "or_errors_async" "riakc_ppx"]

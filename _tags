@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 9bb6d2c65e694acc4a850f5385cdc72a)
+# DO NOT EDIT (digest: b2ad329e3b6ef6c7bcaa68d6afa661a3)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -25,7 +25,6 @@ true: annot, bin_annot
 "src/core/reward_functions.cmx": for-pack(Mas_core)
 "src/core/learning_rule.cmx": for-pack(Mas_core)
 <src/core/*.ml{,i,y}>: pkg_containers
-<src/core/*.ml{,i,y}>: pkg_containers.misc
 <src/core/*.ml{,i,y}>: pkg_gen
 <src/core/*.ml{,i,y}>: pkg_oml
 <src/core/*.ml{,i,y}>: pkg_ppx_deriving
@@ -37,11 +36,10 @@ true: annot, bin_annot
 # Library mas_core_async
 "src/core/async/mas_core_async.cmxs": use_mas_core_async
 "src/core/async/mas_system_async.cmx": for-pack(Mas_core_async)
-<src/core/async/*.ml{,i,y}>: pkg_async
 <src/core/async/*.ml{,i,y}>: pkg_containers
-<src/core/async/*.ml{,i,y}>: pkg_containers.misc
 <src/core/async/*.ml{,i,y}>: pkg_gen
 <src/core/async/*.ml{,i,y}>: pkg_oml
+<src/core/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/core/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/core/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/core/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -55,7 +53,6 @@ true: annot, bin_annot
 "src/value_functions/value_function.cmx": for-pack(Mas_value_functions)
 "src/value_functions/discrete_value_function.cmx": for-pack(Mas_value_functions)
 <src/value_functions/*.ml{,i,y}>: pkg_containers
-<src/value_functions/*.ml{,i,y}>: pkg_containers.misc
 <src/value_functions/*.ml{,i,y}>: pkg_gen
 <src/value_functions/*.ml{,i,y}>: pkg_oml
 <src/value_functions/*.ml{,i,y}>: pkg_ppx_deriving
@@ -68,11 +65,10 @@ true: annot, bin_annot
 # Library mas_value_functions_async
 "src/value_functions/async/mas_value_functions_async.cmxs": use_mas_value_functions_async
 "src/value_functions/async/value_function_async.cmx": for-pack(Mas_value_functions_async)
-<src/value_functions/async/*.ml{,i,y}>: pkg_async
 <src/value_functions/async/*.ml{,i,y}>: pkg_containers
-<src/value_functions/async/*.ml{,i,y}>: pkg_containers.misc
 <src/value_functions/async/*.ml{,i,y}>: pkg_gen
 <src/value_functions/async/*.ml{,i,y}>: pkg_oml
+<src/value_functions/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/value_functions/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/value_functions/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/value_functions/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -89,7 +85,6 @@ true: annot, bin_annot
 "src/learning_rules/q_learner.cmx": for-pack(Mas_learning_rules)
 "src/learning_rules/sarsa_learner.cmx": for-pack(Mas_learning_rules)
 <src/learning_rules/*.ml{,i,y}>: pkg_containers
-<src/learning_rules/*.ml{,i,y}>: pkg_containers.misc
 <src/learning_rules/*.ml{,i,y}>: pkg_gen
 <src/learning_rules/*.ml{,i,y}>: pkg_oml
 <src/learning_rules/*.ml{,i,y}>: pkg_ppx_deriving
@@ -103,11 +98,10 @@ true: annot, bin_annot
 # Library mas_learning_rules_async
 "src/learning_rules/async/mas_learning_rules_async.cmxs": use_mas_learning_rules_async
 "src/learning_rules/async/learning_rules_async.cmx": for-pack(Mas_learning_rules_async)
-<src/learning_rules/async/*.ml{,i,y}>: pkg_async
 <src/learning_rules/async/*.ml{,i,y}>: pkg_containers
-<src/learning_rules/async/*.ml{,i,y}>: pkg_containers.misc
 <src/learning_rules/async/*.ml{,i,y}>: pkg_gen
 <src/learning_rules/async/*.ml{,i,y}>: pkg_oml
+<src/learning_rules/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/learning_rules/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/learning_rules/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/learning_rules/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -127,7 +121,6 @@ true: annot, bin_annot
 "src/policies/softmax_policy.cmx": for-pack(Mas_policies)
 "src/policies/state_based_policy.cmx": for-pack(Mas_policies)
 <src/policies/*.ml{,i,y}>: pkg_containers
-<src/policies/*.ml{,i,y}>: pkg_containers.misc
 <src/policies/*.ml{,i,y}>: pkg_gen
 <src/policies/*.ml{,i,y}>: pkg_oml
 <src/policies/*.ml{,i,y}>: pkg_ppx_deriving
@@ -141,11 +134,10 @@ true: annot, bin_annot
 # Library mas_policies_async
 "src/policies/async/mas_policies_async.cmxs": use_mas_policies_async
 "src/policies/async/async_policy.cmx": for-pack(Mas_policies_async)
-<src/policies/async/*.ml{,i,y}>: pkg_async
 <src/policies/async/*.ml{,i,y}>: pkg_containers
-<src/policies/async/*.ml{,i,y}>: pkg_containers.misc
 <src/policies/async/*.ml{,i,y}>: pkg_gen
 <src/policies/async/*.ml{,i,y}>: pkg_oml
+<src/policies/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/policies/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/policies/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/policies/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -161,7 +153,6 @@ true: annot, bin_annot
 "src/agents/mas_agents.cmxs": use_mas_agents
 "src/agents/state_based_agent.cmx": for-pack(Mas_agents)
 <src/agents/*.ml{,i,y}>: pkg_containers
-<src/agents/*.ml{,i,y}>: pkg_containers.misc
 <src/agents/*.ml{,i,y}>: pkg_gen
 <src/agents/*.ml{,i,y}>: pkg_oml
 <src/agents/*.ml{,i,y}>: pkg_ppx_deriving
@@ -177,11 +168,10 @@ true: annot, bin_annot
 # Library mas_agents_async
 "src/agents/async/mas_agents_async.cmxs": use_mas_agents_async
 "src/agents/async/agent_async.cmx": for-pack(Mas_agents_async)
-<src/agents/async/*.ml{,i,y}>: pkg_async
 <src/agents/async/*.ml{,i,y}>: pkg_containers
-<src/agents/async/*.ml{,i,y}>: pkg_containers.misc
 <src/agents/async/*.ml{,i,y}>: pkg_gen
 <src/agents/async/*.ml{,i,y}>: pkg_oml
+<src/agents/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/agents/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/agents/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/agents/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -202,7 +192,6 @@ true: annot, bin_annot
 "src/environments/mas_environments.cmxs": use_mas_environments
 "src/environments/two_agent.cmx": for-pack(Mas_environments)
 <src/environments/*.ml{,i,y}>: pkg_containers
-<src/environments/*.ml{,i,y}>: pkg_containers.misc
 <src/environments/*.ml{,i,y}>: pkg_gen
 <src/environments/*.ml{,i,y}>: pkg_oml
 <src/environments/*.ml{,i,y}>: pkg_ppx_deriving
@@ -216,11 +205,10 @@ true: annot, bin_annot
 # Library mas_environments_async
 "src/environments/async/mas_environments_async.cmxs": use_mas_environments_async
 "src/environments/async/agent_pipe.cmx": for-pack(Mas_environments_async)
-<src/environments/async/*.ml{,i,y}>: pkg_async
 <src/environments/async/*.ml{,i,y}>: pkg_containers
-<src/environments/async/*.ml{,i,y}>: pkg_containers.misc
 <src/environments/async/*.ml{,i,y}>: pkg_gen
 <src/environments/async/*.ml{,i,y}>: pkg_oml
+<src/environments/async/*.ml{,i,y}>: pkg_or_errors_async
 <src/environments/async/*.ml{,i,y}>: pkg_ppx_deriving
 <src/environments/async/*.ml{,i,y}>: pkg_ppx_deriving.iter
 <src/environments/async/*.ml{,i,y}>: pkg_ppx_deriving.ord
@@ -238,7 +226,6 @@ true: annot, bin_annot
 "src/plot/archimedes_plot.cmx": for-pack(Mas_plot)
 <src/plot/*.ml{,i,y}>: pkg_archimedes
 <src/plot/*.ml{,i,y}>: pkg_containers
-<src/plot/*.ml{,i,y}>: pkg_containers.misc
 <src/plot/*.ml{,i,y}>: pkg_gen
 <src/plot/*.ml{,i,y}>: pkg_oml
 <src/plot/*.ml{,i,y}>: pkg_ppx_deriving
@@ -258,7 +245,6 @@ true: annot, bin_annot
 "src/examples/narmed_bandit.cmx": for-pack(Mas_examples)
 <src/examples/*.ml{,i,y}>: pkg_archimedes
 <src/examples/*.ml{,i,y}>: pkg_containers
-<src/examples/*.ml{,i,y}>: pkg_containers.misc
 <src/examples/*.ml{,i,y}>: pkg_gen
 <src/examples/*.ml{,i,y}>: pkg_oml
 <src/examples/*.ml{,i,y}>: pkg_ppx_deriving

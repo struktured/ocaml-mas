@@ -13,14 +13,14 @@ Library mas_core
   Path:               src/core
   Pack:               true
   Modules:            Gen_ext, Sampling_ext, Mas_intf, Action, Mas_system, State, Reward_functions, Learning_rule
-  BuildDepends:       gen, containers, containers.misc, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
+  BuildDepends:       gen, containers, ppx_deriving, ppx_deriving.ord, ppx_deriving.show, ppx_deriving.iter, ppx_deriving_protobuf, prob_cache_containers, oml
   FindLibName:        mas_core
 
 Library mas_core_async
   Path:               src/core/async
   Pack:               true
   Modules:            Mas_system_async
-  BuildDepends:       mas_core, threads, async
+  BuildDepends:       mas_core, threads, or_errors_async
   FindLibName:        mas_core_async
 
 Library mas_value_functions

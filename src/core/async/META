@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2be08d6cf34c98d127cf82422181581a)
+# DO NOT EDIT (digest: 278618e96a141ec973ae0916dcb8f16c)
 version = "0.1"
 description = "Multiagent system for OCaml"
-requires = "mas_core threads async"
+requires = "mas_core threads or_errors_async"
 archive(byte) = "mas_core_async.cma"
 archive(byte, plugin) = "mas_core_async.cma"
 archive(native) = "mas_core_async.cmxa"
